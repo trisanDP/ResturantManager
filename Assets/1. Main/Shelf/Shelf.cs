@@ -1,51 +1,59 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class Shelf : MonoBehaviour, IInteractable {
-    [Header("Shelf Settings")]
-    [Tooltip("The position where the box will be placed on the shelf.")]
-    public Transform StoragePoint;
+    #region Fields and Settings
+    public List<Transform> StoragePoints = new List<Transform>(); // Positions to place boxes on the shelf
 
-    private BoxObject _storedBox;
+    private List<BoxObject> _storedBoxes = new List<BoxObject>();
+    #endregion
 
+    #region IInteractable Implementation
     public void OnFocusEnter() {
-        // Provide feedback when the player looks at the shelf
-        Debug.Log("Looking at shelf");
+        Debug.Log("Looking at the shelf");
     }
 
     public void OnFocusExit() {
-        // Remove feedback when the player looks away
-        Debug.Log("Stopped looking at shelf");
+        Debug.Log("Stopped looking at the shelf");
     }
 
     public void Interact() {
-        // Check if the player is carrying a box
-        PlayerInteraction playerInteraction = FindFirstObjectByType<PlayerInteraction>();
-        if(playerInteraction == null) return;
+        PlayerInteraction player = FindFirstObjectByType<PlayerInteraction>();
+        if(player != null) {
+            BoxObject carriedBox = player.GetCarriedBox();
 
-        BoxObject carriedBox = playerInteraction.GetCarriedBox();
-        if(carriedBox != null) {
-            if(_storedBox == null) {
+            if(carriedBox != null) {
                 StoreBox(carriedBox);
-                playerInteraction.ClearCarriedBox();
+                player.ClearCarriedBox();
             } else {
-                Debug.LogWarning("Shelf is already holding a box!");
+                Debug.LogWarning("Player is not carrying any box");
             }
-        } else {
-            Debug.LogWarning("Player is not carrying a box!");
         }
     }
+    #endregion
 
-    private void StoreBox(BoxObject box) {
-        Debug.Log("Storing box on the shelf");
-        _storedBox = box;
+    #region Shelf Behavior
+    public void StoreBox(BoxObject box) {
+        if(_storedBoxes.Count >= StoragePoints.Count) {
+            Debug.LogWarning("Shelf is full!");
+            return;
+        }
 
-        // Attach box to the shelf and position it
-        box.transform.SetParent(StoragePoint, true);
-        box.transform.localPosition = Vector3.zero;
-        box.transform.localRotation = Quaternion.identity;
+        _storedBoxes.Add(box);
 
-        // Disable physics for the stored box
-        Rigidbody rb = box.GetComponent<Rigidbody>();
-        if(rb != null) rb.isKinematic = true;
+        // Assign the next available storage point
+        Transform storagePoint = StoragePoints[_storedBoxes.Count - 1];
+        box.Store(storagePoint);
+
+        Debug.Log("Box stored on the shelf");
     }
+
+    public void RemoveBox(BoxObject box) {
+        if(_storedBoxes.Contains(box)) {
+            _storedBoxes.Remove(box);
+            box.ResetToDefault();
+            Debug.Log("Box removed from the shelf");
+        }
+    }
+    #endregion
 }
