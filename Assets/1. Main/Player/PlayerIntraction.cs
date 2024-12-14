@@ -1,73 +1,121 @@
-using UnityEngine;
+/*using UnityEngine;
 
 public class PlayerInteraction : MonoBehaviour {
     #region Fields and Settings
-    [Header("Interaction Settings")]
-    public float InteractionRange = 3f; // Distance for interacting with objects
-    public LayerMask InteractableLayer; // Layer mask for interactable objects
+    [Tooltip("The radius within which the player can interact with objects.")]
+    public float InteractionRange = 2f;
 
+    [Tooltip("Layer mask to identify interactable objects.")]
+    public LayerMask InteractableLayer;
+
+    private IInteractable _currentInteractable;
     private BoxObject _carriedBox;
+    public Transform CarryPoint; // Where the box will attach when carried
     #endregion
 
-    #region Unity Methods
-    void Update() {
-        HandleInput();
-    }
-    #endregion
+    #region MonoBehaviour Methods
+    private void Update() {
+        CheckForInteractables();
 
-    #region Input Handling
-    private void HandleInput() {
         if(Input.GetKeyDown(KeyCode.E)) {
-            Interact();
-        } else if(Input.GetKeyDown(KeyCode.C)) {
+            if(_currentInteractable != null) {
+                _currentInteractable.Interact();
+            }
+        }
+
+        if(Input.GetKeyDown(KeyCode.C)) {
             DropBox();
         }
     }
     #endregion
 
-    #region Interaction Logic
-    private void Interact() {
-        // Raycast to find interactable objects
-        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
-        if(Physics.Raycast(ray, out RaycastHit hit, InteractionRange, InteractableLayer)) {
-            IInteractable interactable = hit.collider.GetComponent<IInteractable>();
-            if(interactable != null) {
-                if(_carriedBox == null) {
-                    // Interact with the object (e.g., pick up a box)
-                    interactable.Interact();
-                } else {
-                    // Attempt to store the carried box if interacting with a shelf
-                    Shelf shelf = hit.collider.GetComponent<Shelf>();
-                    if(shelf != null) {
-                        shelf.StoreBox(_carriedBox);
-                        ClearCarriedBox();
-                    }
+    #region Interaction Methods
+    private void CheckForInteractables() {
+        // Perform a sphere overlap to detect interactable objects
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, InteractionRange, InteractableLayer);
+
+        if(hitColliders.Length > 0) {
+            IInteractable interactable = hitColliders[0].GetComponent<IInteractable>();
+            if(interactable != _currentInteractable) {
+                if(_currentInteractable != null) {
+                    _currentInteractable.OnFocusExit();
                 }
+
+                _currentInteractable = interactable;
+                if(_currentInteractable != null) {
+                    _currentInteractable.OnFocusEnter();
+                }
+            }
+        } else {
+            if(_currentInteractable != null) {
+                _currentInteractable.OnFocusExit();
+                _currentInteractable = null;
             }
         }
     }
 
-    private void DropBox() {
-        if(_carriedBox == null) return;
+    public void PickUpBox(BoxObject box) {
+        if(_carriedBox != null) {
+            Debug.LogWarning("Already carrying a box!");
+            return;
+        }
 
-        // Drop the box to the ground
-        _carriedBox.Drop();
-        ClearCarriedBox();
+        _carriedBox = box;
+        AttachBox(box);
+        box.SetState(ItemState.Carried);
+        Debug.Log($"Picked up {box.ItemData.ItemName}");
     }
-    #endregion
 
-    #region Box Management
+    public void DropBox() {
+        if(_carriedBox == null) {
+            Debug.Log("No box to drop.");
+            return;
+        }
+
+        DetachBox(_carriedBox);
+        _carriedBox.SetState(ItemState.Idle);
+        _carriedBox = null;
+        Debug.Log("Dropped the box.");
+    }
+
+    public void StoreBox(Shelf shelf) {
+        if(_carriedBox == null) {
+            Debug.Log("No box to store.");
+            return;
+        }
+
+        if(!shelf.StoreBox(_carriedBox)) {
+            Debug.LogWarning("Shelf is full!");
+            return;
+        }
+
+        DetachBox(_carriedBox);
+        _carriedBox.SetState(ItemState.Stored);
+        _carriedBox = null;
+        Debug.Log("Box stored on shelf.");
+    }
+
     public BoxObject GetCarriedBox() {
         return _carriedBox;
     }
+    #endregion
 
-    public void ClearCarriedBox() {
-        _carriedBox = null;
+    #region Attachment Methods
+    private void AttachBox(BoxObject box) {
+        box.transform.SetParent(CarryPoint, true);
+        box.transform.localPosition = Vector3.zero;
+        box.transform.localRotation = Quaternion.identity;
+
+        Rigidbody rb = box.GetComponent<Rigidbody>();
+        if(rb != null) rb.isKinematic = true;
     }
 
-    public void PickUpBox(BoxObject box) {
-        _carriedBox = box;
-        box.PickUp(transform);
+    private void DetachBox(BoxObject box) {
+        box.transform.SetParent(null, true);
+
+        Rigidbody rb = box.GetComponent<Rigidbody>();
+        if(rb != null) rb.isKinematic = false;
     }
     #endregion
 }
+*/
