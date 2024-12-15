@@ -27,7 +27,7 @@ public class Shelf : MonoBehaviour, IInteractable {
     private void StoreBox(BoxController controller) {
         FoodBoxObject carriedBox = controller.GetCarriedBox();
         for(int i = 0; i < StoragePoints.Length; i++) {
-            if(_storedBoxes[i] == null) {
+            if(!carriedBox.IsFullyCooked() && _storedBoxes[i] == null) {
                 _storedBoxes[i] = carriedBox;
                 carriedBox.Attach(StoragePoints[i], Vector3.zero, Quaternion.identity);
                 carriedBox.SetState(ItemState.Stored);

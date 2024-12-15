@@ -30,6 +30,7 @@ public class FoodBoxObject : MonoBehaviour, IInteractable {
         Debug.Log($"Stopped focusing on {name}");
     }
 
+
     public void Interact(BoxController controller) {
         if(CurrentState == ItemState.Carried) {
             Debug.LogWarning($"{name} is already being carried!");
@@ -86,4 +87,5 @@ public class FoodBoxObject : MonoBehaviour, IInteractable {
         }
     }
     #endregion
+
 }

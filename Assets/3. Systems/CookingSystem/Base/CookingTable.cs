@@ -1,7 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static FoodItem;
+
+public enum CookingTableType {
+    None,
+    Stove,
+    Oven,
+    Mixer,
+    PreparationTable
+}
 
 public abstract class CookingTable : MonoBehaviour, IInteractable {
     [Header("Cooking Table Settings")]
