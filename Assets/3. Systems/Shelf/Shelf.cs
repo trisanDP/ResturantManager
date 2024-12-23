@@ -30,7 +30,7 @@ public class Shelf : MonoBehaviour, IInteractable {
             if(!carriedBox.IsFullyCooked() && _storedBoxes[i] == null) {
                 _storedBoxes[i] = carriedBox;
                 carriedBox.Attach(StoragePoints[i], Vector3.zero, Quaternion.identity);
-                carriedBox.SetState(ItemState.Stored);
+                carriedBox.SetInteractionState(InteractionState.Stored);
                 controller.ClearCarriedBox();
                 Debug.Log($"{carriedBox.name} stored on shelf.");
                 return;

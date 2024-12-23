@@ -14,6 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FoodName: Pizza
   CookingStages:
+  - StageName: PrepTable
+    Duration: 3
+    RequiredTableType: 0
+    ProgressThreshold: 0
+  - StageName: Stove
+    Duration: 3
+    RequiredTableType: 1
+    ProgressThreshold: 0
   - StageName: Oven
-    Duration: 5
+    Duration: 3
     RequiredTableType: 2
+    ProgressThreshold: 0
+  - StageName: PrepTable
+    Duration: 3
+    RequiredTableType: 0
+    ProgressThreshold: 0
+  CurrentQuality: 0

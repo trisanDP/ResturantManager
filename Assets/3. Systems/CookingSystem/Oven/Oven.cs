@@ -1,29 +1,77 @@
 using System.Collections;
 using UnityEngine;
 
-
-
 public class Oven : CookingTable {
-    protected override IEnumerator ProcessFood(CookingSlot slot) {
-        if(slot.FoodBox == null) {
-            Debug.LogError("No FoodBox assigned to the slot!");
-            yield break;
-        }
+    [Header("Oven Settings")]
+    public Transform DoorTransform;
+    public Light OvenLight;
+    public float OpenAngle = 90f;
+    public float ClosedAngle = 0f;
+    public float DoorRotationSpeed = 5f;
 
-        Debug.Log($"Cooking {slot.FoodBox.FoodName} in the Oven...");
+    private bool _isDoorOpen;
+    private bool _isCooking;
 
-        while(slot.RemainingTime > 0) {
-            yield return null;
-            slot.UpdateTime(Time.deltaTime);
-
-            // Stop cooking if the food box is removed from the table
-            if(slot.IsAvailable || slot.FoodBox.CurrentState != ItemState.Cooking) {
-                Debug.Log($"Cooking interrupted for {slot.FoodBox.FoodName}.");
-                yield break;
-            }
-        }
-
-        Debug.Log($"{slot.FoodBox.FoodName} is done in the Oven!");
-        CompleteCooking(slot);
+    #region Unity Methods
+    private void Update() {
+        UpdateDoorRotation();
+        UpdateLightState();
     }
+    #endregion
+
+    #region Interaction Methods
+    public override void OnFocusEnter() {
+        if(!_isCooking) {
+            SetDoorState(true);
+        }
+        base.OnFocusEnter();
+    }
+
+    public override void OnFocusExit() {
+        if(!_isCooking) {
+            SetDoorState(false);
+        }
+        base.OnFocusExit();
+    }
+    #endregion
+
+    #region Cooking Management
+    protected override void TryStartCooking(FoodBoxObject foodBox, BoxController controller) {
+        base.TryStartCooking(foodBox, controller);
+
+        // Close the door if cooking starts successfully
+        if(_activeCookingCoroutines.ContainsKey(foodBox)) {
+            _isCooking = true;
+            SetDoorState(false);
+        }
+    }
+
+    protected override IEnumerator ProcessFood(CookingSlot slot) {
+        while(slot.RemainingTime > 0) {
+            slot.UpdateTime(Time.deltaTime);
+            yield return null;
+        }
+
+        CompleteCooking(slot);
+        _isCooking = false;
+        SetDoorState(true); // Open the door after cooking completes
+    }
+    #endregion
+
+    #region Door and Light Management
+    private void SetDoorState(bool isOpen) {
+        _isDoorOpen = isOpen;
+    }
+
+    private void UpdateDoorRotation() {
+        float targetAngle = _isDoorOpen ? OpenAngle : ClosedAngle;
+        DoorTransform.localRotation = Quaternion.Lerp(DoorTransform.localRotation, Quaternion.Euler(0, targetAngle, 0), Time.deltaTime * DoorRotationSpeed);
+    }
+
+    private void UpdateLightState() {
+        if(OvenLight != null) {
+            OvenLight.enabled = _isCooking || _isDoorOpen;
+        }
+    }
+    #endregion
 }

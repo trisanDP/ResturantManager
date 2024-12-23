@@ -50,4 +50,5 @@ public class CookingProcess {
     public FoodBoxObject FoodBox;
     public CookingTable CookingTable;
     public float TimeRemaining;
+
 }

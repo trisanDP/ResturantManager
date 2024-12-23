@@ -17,24 +17,30 @@ public class FoodItem : ScriptableObject {
 
     [System.Serializable]
     public class CookingStage {
-        [Header("Stage Details")]
-        public string StageName; // e.g., "Preparation", "Stove", "Oven"
-        public float Duration;   // Duration in seconds for this stage
-        public CookingTableType RequiredTableType; // Reference to the type of table needed
+        public string StageName;
+        public float Duration;
+        public CookingTableType RequiredTableType;
+        public float ProgressThreshold; // E.g., 50 for halfway, 100 for fully cooked
     }
 
+
     public enum FoodQuality {
-        Low,Mid,High
+        Low, Mid, High
     }
 }
 
 
-public enum ItemState {
+// Represents different cooking-related states
+public enum CookingState {
+    Raw,
+    Cooking,
+    Cooked
+}
+
+// Represents different interaction-related states
+public enum InteractionState {
     Idle,
     Carried,
     Stored,
-    Cooking,
-    Cooked,
-    CookednCarried,
-    Ready
+    CookingPlaced
 }

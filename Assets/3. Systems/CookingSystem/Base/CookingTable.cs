@@ -1,57 +1,60 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
-public enum CookingTableType {
-    None,
-    Stove,
-    Oven,
-    Mixer,
-    PreparationTable
-}
-
 public abstract class CookingTable : MonoBehaviour, IInteractable {
+    #region Fields and Properties
+
     [Header("Cooking Table Settings")]
     public Transform[] CookingSpots;
     public CookingTableType TableType;
 
     private readonly List<CookingSlot> _cookingSlots = new();
-    private readonly Dictionary<FoodBoxObject, Coroutine> _activeCookingCoroutines = new();
+    public readonly Dictionary<FoodBoxObject, Coroutine> _activeCookingCoroutines = new();
+
+    #endregion
 
     #region Unity Methods
+
     private void Awake() {
         foreach(var spot in CookingSpots) {
             _cookingSlots.Add(new CookingSlot(spot));
         }
     }
+
     #endregion
 
     #region Interaction Methods
-    public void OnFocusEnter() {
+
+    public virtual void OnFocusEnter() {
         Debug.Log($"Focusing on {name}");
     }
 
-    public void OnFocusExit() {
+    public virtual void OnFocusExit() {
         Debug.Log($"Stopped focusing on {name}");
     }
 
     public void Interact(BoxController controller) {
         FoodBoxObject carriedBox = controller.GetCarriedBox();
 
-        if(carriedBox != null && carriedBox.CurrentState == ItemState.Carried) {
+        if(carriedBox != null && carriedBox.CurrentInteractionState == InteractionState.Carried) {
             TryStartCooking(carriedBox, controller);
         } else {
             Debug.Log("No food box is being carried or invalid state.");
         }
     }
+
     #endregion
 
     #region Cooking Management
+
     protected virtual void TryStartCooking(FoodBoxObject foodBox, BoxController controller) {
         if(foodBox == null || foodBox.FoodItem == null) {
             Debug.LogWarning("Invalid food box or food item!");
             return;
         }
+
 
         var currentStage = foodBox.FoodItem.GetCurrentCookingStage(foodBox.CurrentStageIndex);
 
@@ -67,12 +70,14 @@ public abstract class CookingTable : MonoBehaviour, IInteractable {
         }
 
         float cookingTime = foodBox.RemainingCookingTime > 0 ? foodBox.RemainingCookingTime : currentStage.Duration;
-        PlaceFoodBoxOnTable(foodBox, controller, availableSlot, cookingTime);
+        PlaceFoodBoxOnCookingTable(foodBox, controller, availableSlot, cookingTime);
+
     }
 
-    private void PlaceFoodBoxOnTable(FoodBoxObject foodBox, BoxController controller, CookingSlot slot, float duration) {
+    private void PlaceFoodBoxOnCookingTable(FoodBoxObject foodBox, BoxController controller, CookingSlot slot, float duration) {
         foodBox.Attach(slot.Spot, Vector3.zero, Quaternion.identity);
-        foodBox.SetState(ItemState.Cooking);
+        foodBox.SetCookingState(CookingState.Cooking);
+        foodBox.SetInteractionState(InteractionState.CookingPlaced);
         slot.AssignFoodBox(foodBox, duration);
         controller.ClearCarriedBox();
 
@@ -88,17 +93,16 @@ public abstract class CookingTable : MonoBehaviour, IInteractable {
             return;
         }
 
-        Debug.Log($"Removing {foodBox.FoodName} from {name}...");
-
-        if(_activeCookingCoroutines.TryGetValue(foodBox, out var cookingCoroutine)) {
-            StopCoroutine(cookingCoroutine);
+        if(_activeCookingCoroutines.TryGetValue(foodBox, out var coroutine)) {
+            StopCoroutine(coroutine);
             _activeCookingCoroutines.Remove(foodBox);
         }
 
         foodBox.SetCookingTime(slot.RemainingTime);
         foodBox.Detach();
-        foodBox.SetState(ItemState.Carried);
+        foodBox.SetInteractionState(InteractionState.Carried);
         slot.Clear();
+
 
         Debug.Log("Slot is now available for new food.");
     }
@@ -111,12 +115,11 @@ public abstract class CookingTable : MonoBehaviour, IInteractable {
         Debug.Log($"{slot.FoodBox.FoodName} has finished cooking on {name}!");
         slot.FoodBox.AdvanceCookingStage();
         slot.FoodBox.Detach();
-        slot.FoodBox.SetState(ItemState.Cooked);
+        slot.FoodBox.SetCookingState(CookingState.Cooked);
         slot.Clear();
     }
 
     private CookingSlot GetAvailableSlot(FoodBoxObject foodBox = null) {
-        // Clear any existing slot assignments for the food box
         if(foodBox != null) {
             foreach(var slot in _cookingSlots) {
                 if(slot.FoodBox == foodBox) {
@@ -135,9 +138,11 @@ public abstract class CookingTable : MonoBehaviour, IInteractable {
             }
         }
     }
+
     #endregion
 
     #region CookingSlot
+
     public class CookingSlot {
         public Transform Spot { get; }
         public FoodBoxObject FoodBox { get; private set; }
@@ -166,5 +171,12 @@ public abstract class CookingTable : MonoBehaviour, IInteractable {
             }
         }
     }
+
     #endregion
+}
+
+public enum CookingTableType {
+    PrepTable,
+    Stove,
+    Oven
 }
