@@ -5,7 +5,7 @@ public class BoxController : MonoBehaviour {
 
     [Header("Box Carry Settings")]
     public Transform CarryPoint; // Point where the carried box is held
-    private FoodBoxObject _carriedBox;
+    private BoxObject _carriedBox;
 
     [Header("NPC Selection Settings")]
     private NPC _selectedNPC;
@@ -18,7 +18,7 @@ public class BoxController : MonoBehaviour {
         return _carriedBox != null;
     }
 
-    public FoodBoxObject GetCarriedBox() {
+    public BoxObject GetCarriedBox() {
         return _carriedBox;
     }
 
@@ -26,7 +26,7 @@ public class BoxController : MonoBehaviour {
         _carriedBox = null;
     }
 
-    public void PickUpBox(FoodBoxObject box) {
+    public void PickUpBox(BoxObject box) {
         if(_carriedBox != null) {
             Debug.LogWarning("Already carrying a box!");
             return;

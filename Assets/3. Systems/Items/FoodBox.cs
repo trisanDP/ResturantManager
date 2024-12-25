@@ -1,42 +1,77 @@
-/*using UnityEngine;
-using System.Collections;
-using static FoodItem;
 
-public class FoodBox : MonoBehaviour {
-    public FoodItem foodItem; // Assigned in the inspector (or dynamically)
-    private int currentStageIndex = 0;
+// FoodObject.cs
+using UnityEngine;
 
-    public string FoodName => foodItem.FoodName;
+public class FoodObject : MonoBehaviour {
 
-    public void StartCooking() {
-        if(foodItem.CookingStages.Length > 0) {
-            StartCoroutine(ProcessNextStage());
+    #region Fields and Properties
+
+    [Header("Food Settings")]
+    public CookingState CurrentCookingState = CookingState.Raw;
+    public FoodItem FoodItem;
+    public string FoodName;
+    public float RemainingCookingTime { get; private set; } = 0f;
+    public int CurrentStageIndex { get; private set; } = 0;
+
+    [Range(0,100)]
+    public float CookingProgress = 0f;
+    public float MaxProgress;
+
+    #endregion
+
+    #region Cooking Methods
+
+    public void UpdateCookingProgress(float increment) {
+        CookingProgress += increment;
+        if(CookingProgress >= MaxProgress) {
+            CookingProgress = MaxProgress;
+            SetCookingState(CookingState.Cooked);
+            Debug.Log($"{FoodName} is fully cooked!");
         }
     }
 
-    private IEnumerator ProcessNextStage() {
-        if(currentStageIndex < foodItem.CookingStages.Length) {
-            CookingStage currentStage = foodItem.CookingStages[currentStageIndex];
-            CookingTable table = currentStage.AssociatedTable;
+    public void SetCookingState(CookingState state) {
+        CurrentCookingState = state;
+    }
 
-            // Execute preparation (if any) and cooking stages
-            Debug.Log($"Starting {currentStage.StageName} for {FoodName}...");
+    public void SetCookingTime(float remainingTime) {
+        RemainingCookingTime = remainingTime;
+    }
 
-            yield return new WaitForSeconds(currentStage.Duration); // Time to complete stage
+    public bool IsFullyCooked() {
+        if(CurrentCookingState == CookingState.Cooked)
+            return true;
+        else
+            return false;
+/*        return CurrentStageIndex >= FoodItem.CookingStages.Length;*/
+    }
 
-            Debug.Log($"{FoodName} completed stage: {currentStage.StageName}.");
+    public void AdvanceCookingStage() {
+        RemainingCookingTime = 0f; // Reset cooking time
+        CurrentStageIndex++;
 
-            // Proceed to the next stage
-            currentStageIndex++;
-
-            // Continue processing the next stage if applicable
-            if(currentStageIndex < foodItem.CookingStages.Length) {
-                StartCoroutine(ProcessNextStage());
-            }
+        if(IsFullyCooked()) {
+            Debug.Log($"{FoodName} is fully cooked and ready to serve!");
+            SetCookingState(CookingState.Cooked);
         } else {
-            Debug.Log($"{FoodName} is fully cooked!");
-            // Finished cooking, the food is ready for serving or other actions
+            Debug.Log($"{FoodName} is ready for the next stage.");
+            SetCookingState(CookingState.Cooking);
         }
+    }
+
+    #endregion
+
+    #region Unity Methods
+
+    private void OnValidate() {
+        if(FoodItem != null) {
+            FoodName = FoodItem.FoodName;
+        }
+    }
+
+    #endregion
+
+    public void FinishedEating() {
+        Destroy(gameObject);
     }
 }
-*/

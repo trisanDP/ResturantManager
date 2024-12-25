@@ -28,7 +28,7 @@ public class Stove : CookingTable {
             foodBox.UpdateCookingProgress(progressIncrement);
         }
 
-        CompleteCooking(slot);
+/*        CompleteCooking(slot);*/
     }
 
 

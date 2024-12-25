@@ -36,7 +36,7 @@ public class Oven : CookingTable {
     #endregion
 
     #region Cooking Management
-    protected override void TryStartCooking(FoodBoxObject foodBox, BoxController controller) {
+/*    protected override void TryStartCooking(FoodBoxObject foodBox, BoxController controller) {
         base.TryStartCooking(foodBox, controller);
 
         // Close the door if cooking starts successfully
@@ -44,7 +44,7 @@ public class Oven : CookingTable {
             _isCooking = true;
             SetDoorState(false);
         }
-    }
+    }*/
 
     protected override IEnumerator ProcessFood(CookingSlot slot) {
         while(slot.RemainingTime > 0) {
@@ -52,7 +52,7 @@ public class Oven : CookingTable {
             yield return null;
         }
 
-        CompleteCooking(slot);
+/*        CompleteCooking(slot);*/
         _isCooking = false;
         SetDoorState(true); // Open the door after cooking completes
     }

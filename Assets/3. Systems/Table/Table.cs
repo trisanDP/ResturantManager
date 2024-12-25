@@ -8,7 +8,7 @@ public class Table : MonoBehaviour, IInteractable {
     public Transform[] FoodPlacementPoints; // Points where cooked food can be placed
     public Transform[] NPCChairs;           // Chairs for NPCs
 
-    private FoodBoxObject[] _placedFoods;
+    private FoodObject[] _placedFoods;
     private NPC[] _seatedNPCs;
 
     #endregion
@@ -16,7 +16,7 @@ public class Table : MonoBehaviour, IInteractable {
     #region Initialization
 
     private void Start() {
-        _placedFoods = new FoodBoxObject[FoodPlacementPoints.Length];
+        _placedFoods = new FoodObject[FoodPlacementPoints.Length];
         _seatedNPCs = new NPC[NPCChairs.Length];
     }
 
@@ -49,18 +49,19 @@ public class Table : MonoBehaviour, IInteractable {
 
     // Places food on an available placement point
     private void PlaceFood(BoxController controller) {
-        FoodBoxObject carriedBox = controller.GetCarriedBox();
+        BoxObject carriedBox = controller.GetCarriedBox();
+        FoodObject foodBox = carriedBox.GetComponent<FoodObject>();
 
-        if(carriedBox.CurrentCookingState != CookingState.Cooked) {
+        if(foodBox.CurrentCookingState != CookingState.Cooked) {
             Debug.LogWarning("Only fully cooked food can be placed on the table.");
             return;
         }
 
         for(int i = 0; i < FoodPlacementPoints.Length; i++) {
             if(_placedFoods[i] == null) {
-                _placedFoods[i] = carriedBox;
+                _placedFoods[i] = foodBox;
                 carriedBox.Attach(FoodPlacementPoints[i], Vector3.zero, Quaternion.identity);
-                carriedBox.SetCookingState(CookingState.Cooked);
+                foodBox.SetCookingState(CookingState.Cooked);
                 controller.ClearCarriedBox();
                 Debug.Log("Food placed on the table.");
                 NotifySeatedNPCs();
@@ -72,10 +73,10 @@ public class Table : MonoBehaviour, IInteractable {
     }
 
     // Provides an available food box for an NPC
-    public FoodBoxObject GetAvailableFood() {
+    public FoodObject GetAvailableFood() {
         for(int i = 0; i < _placedFoods.Length; i++) {
             if(_placedFoods[i] != null) {
-                FoodBoxObject food = _placedFoods[i];
+                FoodObject food = _placedFoods[i];
                 _placedFoods[i] = null; // Remove food from table
                 return food;
             }

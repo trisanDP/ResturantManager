@@ -1,54 +1,44 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+/*using System.Collections.Generic;
 using UnityEngine;
 
 public class CookingManager : MonoBehaviour {
+    #region Singleton
     public static CookingManager Instance { get; private set; }
-
-    public event Action OnCookingUpdated; // Triggered when a new item is added or updated
-
-    private List<CookingProcess> activeProcesses = new List<CookingProcess>();
-
     private void Awake() {
-        if(Instance != null) {
+        if(Instance == null) {
+            Instance = this;
+        } else {
             Destroy(gameObject);
-            return;
         }
-        Instance = this;
     }
+    #endregion
 
-    public void StartCooking(FoodBoxObject foodBox, CookingTable table, float duration) {
-        CookingProcess process = new CookingProcess {
-            FoodBox = foodBox,
-            CookingTable = table,
-            TimeRemaining = duration
-        };
-        activeProcesses.Add(process);
+    #region Fields
+    private readonly List<CookingSlot> _activeCookingSlots = new();
+    #endregion
 
-        OnCookingUpdated?.Invoke();
-        StartCoroutine(CookingRoutine(process));
-    }
-
-    private IEnumerator CookingRoutine(CookingProcess process) {
-        while(process.TimeRemaining > 0) {
-            process.TimeRemaining -= Time.deltaTime;
-            yield return null;
+    #region Public Methods
+    public void RegisterSlot(CookingSlot slot) {
+        if(!_activeCookingSlots.Contains(slot)) {
+            _activeCookingSlots.Add(slot);
         }
-        process.FoodBox.AdvanceCookingStage();
-        activeProcesses.Remove(process);
-        OnCookingUpdated?.Invoke();
     }
 
-    public List<CookingProcess> GetActiveProcesses() {
-        return new List<CookingProcess>(activeProcesses); // Return a copy for safety
+    public void UnregisterSlot(CookingSlot slot) {
+        if(_activeCookingSlots.Contains(slot)) {
+            _activeCookingSlots.Remove(slot);
+        }
     }
-}
 
-[Serializable]
-public class CookingProcess {
-    public FoodBoxObject FoodBox;
-    public CookingTable CookingTable;
-    public float TimeRemaining;
-
+    private void Update() {
+        foreach(var slot in _activeCookingSlots) {
+            if(!slot.IsAvailable) {
+                slot.UpdateTime(Time.deltaTime);
+                float progress = 1f - (slot.RemainingTime / slot.TotalCookingTime);
+               *//* CookingUIManager.Instance?.UpdateProgressBar(slot.FoodBox, progress);*//*
+            }
+        }
+    }
+    #endregion
 }
+*/

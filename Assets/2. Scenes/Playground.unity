@@ -413,7 +413,8 @@ GameObject:
   - component: {fileID: 195929363}
   - component: {fileID: 195929362}
   - component: {fileID: 195929361}
-  - component: {fileID: 195929360}
+  - component: {fileID: 195929366}
+  - component: {fileID: 195929365}
   m_Layer: 3
   m_Name: FoodBox (2)
   m_TagString: Untagged
@@ -436,22 +437,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 767721707}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &195929360
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 195929358}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ee4b2610a296bf2428e2c7951377bb05, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CurrentInteractionState: 0
-  CurrentCookingState: 0
-  FoodItem: {fileID: 11400000, guid: b7962a9063a28d446ac92bd28057e7a4, type: 2}
-  FoodName: FrozenMomo
 --- !u!54 &195929361
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -553,6 +538,34 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 195929358}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &195929365
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 195929358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c7aca1139021d74086222367e464fbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CurrentInteractionState: 0
+--- !u!114 &195929366
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 195929358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e7f518917f65104ca9bb7019f1398f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CurrentCookingState: 0
+  FoodItem: {fileID: 11400000, guid: b7962a9063a28d446ac92bd28057e7a4, type: 2}
+  FoodName: FrozenMomo
 --- !u!1 &308539387 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 9005220659476430823, guid: 2d3a85ecde41a8246a79669975912b74, type: 3}
@@ -1639,6 +1652,50 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2114283753834967213}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1066520095
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1066520097}
+  - component: {fileID: 1066520096}
+  m_Layer: 0
+  m_Name: CookingManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1066520096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1066520095}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a9038a9235cc8b4b9de930c8c3ed5d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1066520097
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1066520095}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.8892236, y: 1.8465368, z: 3.016366}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1086888898
 GameObject:
   m_ObjectHideFlags: 0
@@ -1709,6 +1766,10 @@ MonoBehaviour:
   CurrentCookingState: 0
   FoodItem: {fileID: 11400000, guid: 532d9eca5c853ad4b91af428b68d3b9e, type: 2}
   FoodName: 
+  <RemainingCookingTime>k__BackingField: 0
+  <CurrentStageIndex>k__BackingField: 0
+  _originalParent: {fileID: 0}
+  <CookingProgress>k__BackingField: 0
 --- !u!54 &1087423024
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2552,6 +2613,10 @@ MonoBehaviour:
   CurrentCookingState: 0
   FoodItem: {fileID: 11400000, guid: 123627b61acf11241bf6b4d15b7e4fcd, type: 2}
   FoodName: Pizza
+  <RemainingCookingTime>k__BackingField: 0
+  <CurrentStageIndex>k__BackingField: 0
+  _originalParent: {fileID: 0}
+  <CookingProgress>k__BackingField: 0
 --- !u!43 &1464699080
 Mesh:
   m_ObjectHideFlags: 0
@@ -4779,3 +4844,4 @@ SceneRoots:
   - {fileID: 2033484255}
   - {fileID: 1368676449}
   - {fileID: 767721707}
+  - {fileID: 1066520097}

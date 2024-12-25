@@ -7,7 +7,7 @@ public class NPC : MonoBehaviour, IInteractable {
     [Header("NPC Settings")]
     public float EatingSpeed = 1f; // Speed multiplier for eating food
 
-    private FoodBoxObject _currentFood;
+    private FoodObject _currentFood;
     private bool _isEating = false;
     private Table _assignedTable;
 
@@ -22,7 +22,7 @@ public class NPC : MonoBehaviour, IInteractable {
     }
 
     // Starts the eating process for the given food box
-    public void StartEating(FoodBoxObject food) {
+    public void StartEating(FoodObject food) {
         if(_isEating) {
             Debug.LogWarning($"{name} is already eating.");
             return;
@@ -80,7 +80,7 @@ public class NPC : MonoBehaviour, IInteractable {
             return;
         }
 
-        FoodBoxObject food = _assignedTable.GetAvailableFood();
+        FoodObject food = _assignedTable.GetAvailableFood();
         if(food != null) {
             StartEating(food);
         } else {

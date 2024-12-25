@@ -1,4 +1,4 @@
-using UnityEngine;
+/*using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 public class FoodBoxObject : MonoBehaviour, IInteractable {
@@ -129,4 +129,4 @@ public class FoodBoxObject : MonoBehaviour, IInteractable {
     }
 
     #endregion
-}
+}*/

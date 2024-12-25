@@ -3,7 +3,7 @@ using UnityEngine;
 using TMPro;
 
 public class CookingUIManager : MonoBehaviour {
-    [SerializeField] private Transform uiContainer; // Parent transform for UI elements
+    /*[SerializeField] private Transform uiContainer; // Parent transform for UI elements
     [SerializeField] private GameObject cookingItemPrefab; // Prefab for a single UI element
 
     private Dictionary<CookingProcess, GameObject> uiElements = new Dictionary<CookingProcess, GameObject>();
@@ -46,5 +46,5 @@ public class CookingUIManager : MonoBehaviour {
         foodNameText.text = process.FoodBox.FoodName;
         tableNameText.text = process.CookingTable.name;
         timeRemainingText.text = $"{process.TimeRemaining:F1} seconds";
-    }
+    }*/
 }
