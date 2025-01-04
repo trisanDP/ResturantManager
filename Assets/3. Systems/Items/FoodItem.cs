@@ -20,7 +20,6 @@ public class FoodItem : ScriptableObject {
         public string StageName;
         public float Duration;
         public CookingTableType RequiredTableType;
-        public float ProgressThreshold; // E.g., 50 for halfway, 100 for fully cooked
     }
 
 
@@ -34,6 +33,7 @@ public class FoodItem : ScriptableObject {
 public enum CookingState {
     Raw,
     Cooking,
+    HalfCooked,
     Cooked
 }
 

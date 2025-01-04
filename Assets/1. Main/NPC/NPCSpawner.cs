@@ -7,11 +7,11 @@ public class NPCSpawner : MonoBehaviour, IInteractable {
     public Transform SpawnLocation;
 
     public void OnFocusEnter() {
-        Debug.Log("Focusing on NPC Spawner");
+        //Debug.Log("Focusing on NPC Spawner");
     }
 
     public void OnFocusExit() {
-        Debug.Log("Stopped focusing on NPC Spawner");
+        //Debug.Log("Stopped focusing on NPC Spawner");
     }
 
     public void Interact(BoxController controller) {

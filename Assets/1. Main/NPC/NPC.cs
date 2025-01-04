@@ -5,23 +5,29 @@ public class NPC : MonoBehaviour, IInteractable {
     #region Fields and Properties
 
     [Header("NPC Settings")]
+    public FoodItem OrderedFood; // The food this NPC has ordered
     public float EatingSpeed = 1f; // Speed multiplier for eating food
+    public GameObject SelectedIdentifier;
 
     private FoodObject _currentFood;
     private bool _isEating = false;
     private Table _assignedTable;
 
+    public bool HasOrderedFood => OrderedFood != null; // Check if the NPC has an active order
+
     #endregion
 
     #region Eating Logic
 
-    // Assigns a table to the NPC
-    public void AssignTable(Table table) {
-        _assignedTable = table;
-        CheckForFoodOnTable();
+    void Start() {
+        SelectedIdentifier.SetActive(false);
     }
 
-    // Starts the eating process for the given food box
+    public void AssignTable(Table table) {
+        _assignedTable = table;
+        OrderFood(OrderedFood);
+    }
+
     public void StartEating(FoodObject food) {
         if(_isEating) {
             Debug.LogWarning($"{name} is already eating.");
@@ -33,22 +39,24 @@ public class NPC : MonoBehaviour, IInteractable {
             return;
         }
 
+        if(OrderedFood == null || food.FoodItem != OrderedFood) {
+            Debug.LogWarning($"{name} did not order this food.");
+            return;
+        }
+
         _currentFood = food;
         _isEating = true;
-
         Debug.Log($"{name} started eating {_currentFood.FoodName}.");
         StartCoroutine(EatFood());
     }
 
-    // Handles the eating process over time
     private IEnumerator EatFood() {
         if(_currentFood == null || _currentFood.FoodItem == null) {
             Debug.LogWarning($"{name} cannot eat: Missing food or food data.");
             yield break;
         }
 
-        // Calculate eating time based on NPC speed and food quality
-        float baseEatTime = 5f; // Default time to eat any food
+        float baseEatTime = 5f;
         float qualityMultiplier = GetQualityMultiplier(_currentFood.FoodItem.CurrentQuality);
         float eatTime = baseEatTime / (EatingSpeed * qualityMultiplier);
 
@@ -58,12 +66,9 @@ public class NPC : MonoBehaviour, IInteractable {
         _currentFood.FinishedEating();
         _currentFood = null;
         _isEating = false;
-
-        // Check for more food on the table after finishing
-        CheckForFoodOnTable();
+        OrderedFood = null; // Clear the order after eating
     }
 
-    // Returns a multiplier based on food quality
     private float GetQualityMultiplier(FoodItem.FoodQuality quality) {
         return quality switch {
             FoodItem.FoodQuality.Low => 0.75f,
@@ -73,29 +78,26 @@ public class NPC : MonoBehaviour, IInteractable {
         };
     }
 
-    // Checks for available food on the assigned table
-    public void CheckForFoodOnTable() {
+    public void OrderFood(FoodItem foodItem) {
         if(_assignedTable == null) {
-            Debug.LogWarning($"{name} has no assigned table to check for food.");
+            Debug.LogWarning($"{name} is not assigned to a table.");
             return;
         }
 
-        FoodObject food = _assignedTable.GetAvailableFood();
-        if(food != null) {
-            StartEating(food);
-        } else {
-            Debug.Log($"{name} found no food on the table.");
-        }
+        _assignedTable.TakeOrder(this, foodItem);
+    }
+
+    public void NotifyFoodPlaced(FoodObject food) {
+        StartEating(food);
     }
 
     #endregion
 
-    #region Teleport Logic
+    #region Seating Logic
 
-    // Instantly moves the NPC to the given position and rotation
     public void TeleportTo(Vector3 position, Quaternion rotation) {
         transform.SetPositionAndRotation(position, rotation);
-        Debug.Log($"{name} teleported to the table.");
+        Debug.Log($"{name} seated at a new chair.");
     }
 
     #endregion
@@ -103,21 +105,23 @@ public class NPC : MonoBehaviour, IInteractable {
     #region IInteractable Implementation
 
     public void OnFocusEnter() {
-        Debug.Log($"Player is focusing on NPC {name}.");
+        // Debug.Log($"Player is focusing on NPC {name}.");
     }
 
     public void OnFocusExit() {
-        Debug.Log($"Player stopped focusing on NPC {name}.");
+        // Debug.Log($"Player stopped focusing on NPC {name}.");
     }
 
     public void Interact(BoxController controller) {
-        if(controller.HasSelectedNPC()) {
-            Debug.LogWarning($"Another NPC is already selected: {controller.GetSelectedNPC().name}");
-            return;
+        if(controller.HasCarriedBox()) {
+            var foodBox = controller.GetCarriedBox()?.GetComponent<FoodObject>();
+            if(foodBox != null) {
+                StartEating(foodBox);
+                controller.ClearCarriedBox();
+            }
+        } else {
+            controller.SelectNPC(this);
         }
-
-        controller.SelectNPC(this);
-        Debug.Log($"{name} has been selected by the player.");
     }
 
     #endregion

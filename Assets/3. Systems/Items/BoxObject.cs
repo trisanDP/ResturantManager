@@ -9,8 +9,12 @@ public class BoxObject : MonoBehaviour, IInteractable {
     public InteractionState CurrentInteractionState = InteractionState.Idle;
 
     private Transform _originalParent;
-
+    public FoodObject FoodObject;
     #endregion
+
+    private void Start() {
+        FoodObject = GetComponent<FoodObject>();
+    }
 
     #region Interaction Methods
 
@@ -27,6 +31,12 @@ public class BoxObject : MonoBehaviour, IInteractable {
             Debug.LogWarning($"{name} is already being carried!");
             return;
         }
+
+        if(FoodObject.CurrentCookingState == CookingState.Cooking) {
+            Debug.LogWarning("Its Still Cooking");
+            return;
+        }
+        
 
         Debug.Log($"Interacting with {name}");
         controller.PickUpBox(this);

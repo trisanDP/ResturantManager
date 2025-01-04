@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class Oven : CookingTable {
+public class Oven : CookingTable, IUpdateObserver {
     [Header("Oven Settings")]
     public Transform DoorTransform;
     public Light OvenLight;
@@ -10,12 +10,18 @@ public class Oven : CookingTable {
     public float DoorRotationSpeed = 5f;
 
     private bool _isDoorOpen;
-    private bool _isCooking;
 
     #region Unity Methods
-    private void Update() {
+    private void OnEnable() {
+        UpdateManager.RegisterObserver(this);
+    }
+    public void ObservedUpdate() {
         UpdateDoorRotation();
         UpdateLightState();
+    }
+
+    private void OnDestroy() {
+        UpdateManager.UnregisterObserver(this);
     }
     #endregion
 
@@ -46,21 +52,25 @@ public class Oven : CookingTable {
         }
     }*/
 
-    protected override IEnumerator ProcessFood(CookingSlot slot) {
+/*    protected override IEnumerator ProcessFood(CookingSlot slot) {
         while(slot.RemainingTime > 0) {
             slot.UpdateTime(Time.deltaTime);
             yield return null;
         }
 
-/*        CompleteCooking(slot);*/
+*//*        CompleteCooking(slot);*//*
         _isCooking = false;
         SetDoorState(true); // Open the door after cooking completes
-    }
+    }*/
     #endregion
 
     #region Door and Light Management
     private void SetDoorState(bool isOpen) {
-        _isDoorOpen = isOpen;
+        if(!_isCooking)
+            _isDoorOpen = isOpen;
+        else
+            _isDoorOpen = false;
+            
     }
 
     private void UpdateDoorRotation() {
@@ -73,5 +83,7 @@ public class Oven : CookingTable {
             OvenLight.enabled = _isCooking || _isDoorOpen;
         }
     }
+
+
     #endregion
 }

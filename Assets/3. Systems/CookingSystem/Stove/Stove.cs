@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 public class Stove : CookingTable {
-    protected override IEnumerator ProcessFood(CookingSlot slot) {
+/*    protected override IEnumerator ProcessFood(CookingSlot slot) {
         if(slot.FoodBox == null)
             yield break;
 
@@ -28,8 +28,8 @@ public class Stove : CookingTable {
             foodBox.UpdateCookingProgress(progressIncrement);
         }
 
-/*        CompleteCooking(slot);*/
-    }
+*//*        CompleteCooking(slot);*//*
+    }*/
 
 
 }

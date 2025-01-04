@@ -1,11 +1,13 @@
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 
 public class Shelf : MonoBehaviour, IInteractable {
     public Transform[] StoragePoints;
     private BoxObject[] _storedBoxes;
-
+    private Collider _collider;
     private void Start() {
         _storedBoxes = new BoxObject[StoragePoints.Length];
+        _collider = GetComponent<Collider>();
     }
 
     public void OnFocusEnter() {
@@ -20,7 +22,8 @@ public class Shelf : MonoBehaviour, IInteractable {
         if(controller.HasCarriedBox()) {
             StoreBox(controller);
         } else {
-            RetrieveBox(controller);
+            //Open UI
+            /*RetrieveBox(controller);*/
         }
     }
 

@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 
 public class PrepTable : CookingTable {
-
+/*
     protected override IEnumerator ProcessFood(CookingSlot slot) {
         if(slot.FoodBox == null) {
             Debug.LogError("No FoodBox assigned to the slot!");
@@ -17,6 +17,6 @@ public class PrepTable : CookingTable {
         }
 
         Debug.Log($"{slot.FoodBox.FoodName} is done in the PrepTable!");
-/*        CompleteCooking(slot);*/
-    }
+*//*        CompleteCooking(slot);*//*
+    }*/
 }

@@ -17,17 +17,13 @@ MonoBehaviour:
   - StageName: PrepTable
     Duration: 3
     RequiredTableType: 0
-    ProgressThreshold: 0
   - StageName: Stove
     Duration: 3
     RequiredTableType: 1
-    ProgressThreshold: 0
-  - StageName: Oven
+  - StageName: Stove
     Duration: 3
     RequiredTableType: 2
-    ProgressThreshold: 0
-  - StageName: PrepTable
+  - StageName: Stove
     Duration: 3
     RequiredTableType: 0
-    ProgressThreshold: 0
   CurrentQuality: 0

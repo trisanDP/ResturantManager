@@ -1,16 +1,26 @@
 using UnityEngine;
 
-public class PlayerScript : MonoBehaviour
-{
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
+public class PlayerScript : MonoBehaviour, IUpdateObserver {
+    private bool isTabOpen = false;
+
+    public void ObservedUpdate() {
+        ObserveInput();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    void ObserveInput() {
+        if(Input.GetKeyDown(KeyCode.Tab)) {
+            isTabOpen = !isTabOpen;
+            Debug.Log("Pressed");
+            EventManager.Trigger("TabToggle", isTabOpen);
+        }
+    }
+
+
+
+    void OnEnable() {
+        UpdateManager.RegisterObserver(this);
+    }
+    void OnDestroy() {
+        UpdateManager.UnregisterObserver(this);
     }
 }

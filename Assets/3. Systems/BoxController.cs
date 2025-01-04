@@ -18,6 +18,7 @@ public class BoxController : MonoBehaviour {
         return _carriedBox != null;
     }
 
+
     public BoxObject GetCarriedBox() {
         return _carriedBox;
     }
