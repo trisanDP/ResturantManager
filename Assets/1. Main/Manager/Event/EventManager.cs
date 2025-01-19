@@ -1,23 +1,36 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public static class EventManager {
-    private static readonly Dictionary<string, Action<bool>> eventDictionary = new Dictionary<string, Action<bool>>();
+    // Dictionary for input-related events
+    private static readonly Dictionary<string, Action<bool>> inputEventDictionary = new Dictionary<string, Action<bool>>();
 
+    // Subscribe a listener to an input event
     public static void Subscribe(string eventName, Action<bool> listener) {
-        if(!eventDictionary.ContainsKey(eventName))
-            eventDictionary[eventName] = null;
+        if(!inputEventDictionary.ContainsKey(eventName))
+            inputEventDictionary[eventName] = null;
 
-        eventDictionary[eventName] += listener;
+        inputEventDictionary[eventName] += listener;
     }
 
+    // Unsubscribe a listener from an input event
     public static void Unsubscribe(string eventName, Action<bool> listener) {
-        if(eventDictionary.ContainsKey(eventName))
-            eventDictionary[eventName] -= listener;
+        if(inputEventDictionary.ContainsKey(eventName))
+            inputEventDictionary[eventName] -= listener;
     }
 
+    // Trigger an input event with a bool parameter
     public static void Trigger(string eventName, bool parameter) {
-        if(eventDictionary.ContainsKey(eventName))
-            eventDictionary[eventName]?.Invoke(parameter);
+        if(inputEventDictionary.ContainsKey(eventName))
+            inputEventDictionary[eventName]?.Invoke(parameter);
+    }
+
+    // Retrieve all subscribers for a specific input event
+    public static List<Delegate> GetSubscribers(string eventName) {
+        if(inputEventDictionary.ContainsKey(eventName) && inputEventDictionary[eventName] != null) {
+            return inputEventDictionary[eventName].GetInvocationList().ToList();
+        }
+        return null; // No subscribers or event doesn't exist
     }
 }

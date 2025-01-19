@@ -2,15 +2,27 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
+    public static GameManager Instance;
+
+    public FinanceManager FinanceManager;
+
+    private void Awake() {
+        if(Instance == null)
+            Instance = this; 
+        else
+            Destroy(Instance);
+        Instantiate();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    void Instantiate() {
+        LinkedScripts();
+    }
+
+    void LinkedScripts() {
+        if(FinanceManager == null) {
+            FinanceManager = FindFirstObjectByType<FinanceManager>();
+            GameUIMessage.Instance.DisplayMessage("Consuming Perfromance",2);
+        }
+
     }
 }

@@ -1,10 +1,10 @@
 using UnityEngine;
-#if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
-#endif
 
 namespace StarterAssets {
     public class StarterAssetsInputs : MonoBehaviour {
+        #region Variables
+
         [Header("Character Input Values")]
         public Vector2 move;
         public Vector2 look;
@@ -12,8 +12,7 @@ namespace StarterAssets {
         public bool sprint;
 
         [Header("Interaction Settings")]
-        public bool onInteract;
-        public bool tabMenuOpen = false; // Tracks the Tab menu state
+        public bool tabMenuOpen = false;
 
         [Header("Movement Settings")]
         public bool analogMovement;
@@ -22,70 +21,71 @@ namespace StarterAssets {
         public bool cursorLocked = true;
         public bool cursorInputForLook = true;
 
-#if ENABLE_INPUT_SYSTEM
-        public void OnMove(InputValue value) {
-            if(!tabMenuOpen) // Ignore movement input when the tab menu is open
-            {
-                MoveInput(value.Get<Vector2>());
+        private PlayerInput _playerInput;
+
+        #endregion
+
+        #region Unity Methods
+
+        private void Start() {
+            _playerInput = GetComponent<PlayerInput>();
+        }
+
+        public void OnMove(InputAction.CallbackContext context) {
+            if(!tabMenuOpen) {
+                move = context.ReadValue<Vector2>();
             }
         }
 
-        public void OnLook(InputValue value) {
-            if(cursorInputForLook && !tabMenuOpen) // Ignore look input when the tab menu is open
-            {
-                LookInput(value.Get<Vector2>());
+        public void OnLook(InputAction.CallbackContext context) {
+            if(!tabMenuOpen && cursorInputForLook) {
+                look = context.ReadValue<Vector2>();
             }
         }
 
-        public void OnJump(InputValue value) {
-            if(!tabMenuOpen) // Ignore jump input when the tab menu is open
-            {
-                JumpInput(value.isPressed);
+        public void OnJump(InputAction.CallbackContext context) {
+            if(!tabMenuOpen) {
+                jump = context.ReadValueAsButton();
             }
         }
 
-        public void OnSprint(InputValue value) {
-            if(!tabMenuOpen) // Ignore sprint input when the tab menu is open
-            {
-                SprintInput(value.isPressed);
+        public void OnSprint(InputAction.CallbackContext context) {
+            if(!tabMenuOpen) {
+                sprint = context.ReadValueAsButton();
             }
         }
 
-        public void OnTab(InputValue value) {
-            if(value.isPressed) {
+        public void OnTab(InputAction.CallbackContext context) {
+            if(context.performed) {
                 tabMenuOpen = !tabMenuOpen;
-                SetCursorState(!tabMenuOpen); // Lock/unlock cursor based on menu state
-                cursorInputForLook = !tabMenuOpen; // Disable camera control when menu is open
+
+                // Trigger Tab Toggle Event
+                EventManager.Trigger("TabToggle", tabMenuOpen);
+
+                // Lock or unlock the cursor
+                SetCursorState(!tabMenuOpen);
+
+                // Disable player input while tab is open
+                cursorInputForLook = !tabMenuOpen;
+                move = Vector2.zero;
             }
-        }
-#endif
-
-        public void MoveInput(Vector2 newMoveDirection) {
-            move = newMoveDirection;
-        }
-
-        public void LookInput(Vector2 newLookDirection) {
-            look = newLookDirection;
-        }
-
-        public void JumpInput(bool newJumpState) {
-            jump = newJumpState;
-        }
-
-        public void SprintInput(bool newSprintState) {
-            sprint = newSprintState;
         }
 
         private void OnApplicationFocus(bool hasFocus) {
-            if(!tabMenuOpen) // Only lock the cursor if the tab menu is not open
-            {
+            if(!tabMenuOpen) {
                 SetCursorState(cursorLocked);
             }
         }
+
+        #endregion
+
+        #region Helper Methods
 
         private void SetCursorState(bool newState) {
             Cursor.lockState = newState ? CursorLockMode.Locked : CursorLockMode.None;
             Cursor.visible = !newState;
         }
+
+        #endregion
     }
 }
