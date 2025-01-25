@@ -11,7 +11,7 @@ public class Table : MonoBehaviour, IInteractable {
     public Transform[] chairs;
 
     private FoodObject[] _placedFoods;
-    private NPC[] _seatedNPCs;
+    private Customer[] _seatedNPCs;
     private TableOrder _tableOrder;
 
     #endregion
@@ -20,7 +20,7 @@ public class Table : MonoBehaviour, IInteractable {
 
     private void Start() {
         _placedFoods = new FoodObject[FoodPlacementPoints.Length];
-        _seatedNPCs = new NPC[chairs.Length];
+        _seatedNPCs = new Customer[chairs.Length];
         _tableOrder = new TableOrder();
     }
 
@@ -39,7 +39,7 @@ public class Table : MonoBehaviour, IInteractable {
         if(controller.HasCarriedBox()) {
             PlaceFood(controller);
         } else if(controller.HasSelectedNPC()) {
-            NPC selectedNPC = controller.GetSelectedNPC();
+            Customer selectedNPC = controller.GetSelectedNPC();
             SeatNPC(selectedNPC, GetRandomAvailableChairIndex());
             controller.DeselectNPC();
         }
@@ -48,7 +48,7 @@ public class Table : MonoBehaviour, IInteractable {
 
     #region Order Management
 
-    public void TakeOrder(NPC npc, FoodItem foodItem) {
+    public void TakeOrder(Customer npc, FoodItemData foodItem) {
         _tableOrder.AddOrder(npc, foodItem);
     }
     public void PlaceFood(BoxController controller) {
@@ -60,7 +60,7 @@ public class Table : MonoBehaviour, IInteractable {
             return;
         }
 
-        NPC npc = _tableOrder.GetNPCForFood(foodBox.FoodItem);
+        Customer npc = _tableOrder.GetNPCForFood(foodBox.FoodItemData);
         if(npc == null) {
             Debug.LogWarning("No NPC at this table ordered this food.");
             return;
@@ -86,7 +86,7 @@ public class Table : MonoBehaviour, IInteractable {
 
     #region Chair Management
 
-    public void SeatNPC(NPC npc, int chairIndex) {
+    public void SeatNPC(Customer npc, int chairIndex) {
         if(chairIndex < 0 || chairIndex >= chairs.Length || _seatedNPCs[chairIndex] != null) {
             Debug.LogWarning("Invalid or occupied chair.");
             return;
@@ -103,7 +103,7 @@ public class Table : MonoBehaviour, IInteractable {
         _seatedNPCs[chairIndex] = null;
     }
 
-    public void SeatNPCsRandomly(NPC[] npcs) {
+    public void SeatNPCsRandomly(Customer[] npcs) {
         if(npcs == null || npcs.Length == 0) {
             Debug.LogWarning("No NPCs provided to seat.");
             return;

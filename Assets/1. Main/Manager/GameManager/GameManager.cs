@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -11,17 +12,17 @@ public class GameManager : MonoBehaviour
             Instance = this; 
         else
             Destroy(Instance);
-        Instantiate();
+        Initialize();
     }
 
-    void Instantiate() {
+    void Initialize() {
         LinkedScripts();
     }
 
     void LinkedScripts() {
         if(FinanceManager == null) {
             FinanceManager = FindFirstObjectByType<FinanceManager>();
-            GameUIMessage.Instance.DisplayMessage("Consuming Perfromance",2);
+/*            GameUIMessage.Instance.DisplayMessage("Consuming Perfromance",2);*/
         }
 
     }

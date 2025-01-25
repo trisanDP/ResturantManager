@@ -1,11 +1,11 @@
 using UnityEngine;
 using System.Collections;
 
-public class NPC : MonoBehaviour, IInteractable {
+public class Customer : MonoBehaviour, IInteractable {
     #region Fields and Properties
 
     [Header("NPC Settings")]
-    public FoodItem OrderedFood; // The food this NPC has ordered
+    public FoodItemData OrderedFood; // The food this NPC has ordered
     public float EatingSpeed = 1f; // Speed multiplier for eating food
     public GameObject SelectedIdentifier;
 
@@ -18,7 +18,6 @@ public class NPC : MonoBehaviour, IInteractable {
     #endregion
 
     #region Eating Logic
-
     void Start() {
         SelectedIdentifier.SetActive(false);
     }
@@ -39,7 +38,7 @@ public class NPC : MonoBehaviour, IInteractable {
             return;
         }
 
-        if(OrderedFood == null || food.FoodItem != OrderedFood) {
+        if(OrderedFood == null || food.FoodItemData != OrderedFood) {
             Debug.LogWarning($"{name} did not order this food.");
             return;
         }
@@ -51,13 +50,13 @@ public class NPC : MonoBehaviour, IInteractable {
     }
 
     private IEnumerator EatFood() {
-        if(_currentFood == null || _currentFood.FoodItem == null) {
+        if(_currentFood == null || _currentFood.FoodItemData == null) {
             Debug.LogWarning($"{name} cannot eat: Missing food or food data.");
             yield break;
         }
 
         float baseEatTime = 5f;
-        float qualityMultiplier = GetQualityMultiplier(_currentFood.FoodItem.CurrentQuality);
+        float qualityMultiplier = GetQualityMultiplier(_currentFood.FoodItemData.CurrentQuality);
         float eatTime = baseEatTime / (EatingSpeed * qualityMultiplier);
 
         yield return new WaitForSeconds(eatTime);
@@ -69,16 +68,16 @@ public class NPC : MonoBehaviour, IInteractable {
         OrderedFood = null; // Clear the order after eating
     }
 
-    private float GetQualityMultiplier(FoodItem.FoodQuality quality) {
+    private float GetQualityMultiplier(FoodItemData.FoodQuality quality) {
         return quality switch {
-            FoodItem.FoodQuality.Low => 0.75f,
-            FoodItem.FoodQuality.Mid => 1f,
-            FoodItem.FoodQuality.High => 1.25f,
+            FoodItemData.FoodQuality.Low => 0.75f,
+            FoodItemData.FoodQuality.Mid => 1f,
+            FoodItemData.FoodQuality.High => 1.25f,
             _ => 1f
         };
     }
 
-    public void OrderFood(FoodItem foodItem) {
+    public void OrderFood(FoodItemData foodItem) {
         if(_assignedTable == null) {
             Debug.LogWarning($"{name} is not assigned to a table.");
             return;

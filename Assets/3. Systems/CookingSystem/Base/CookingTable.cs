@@ -55,7 +55,7 @@ public abstract class CookingTable : MonoBehaviour, IInteractable {
     #region Cooking Management
 
     protected virtual void TryStartCooking(FoodObject foodObject, BoxController controller) {
-        if(foodObject == null || foodObject.FoodItem == null) {
+        if(foodObject == null || foodObject.FoodItemData == null) {
             Debug.LogWarning("Invalid food box or food item!");
             return;
         }
@@ -99,7 +99,7 @@ public abstract class CookingTable : MonoBehaviour, IInteractable {
         if(stage == null)
             yield break;
 
-        float stageProgressIncrement = 100f / foodObject.FoodItem.CookingStages.Length;
+        float stageProgressIncrement = 100f / foodObject.FoodItemData.CookingStages.Length;
         float duration = stage.Duration;
         float elapsedTime = 0f;
 

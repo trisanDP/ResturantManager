@@ -8,7 +8,7 @@ public class BoxController : MonoBehaviour {
     private BoxObject _carriedBox;
 
     [Header("NPC Selection Settings")]
-    private NPC _selectedNPC;
+    private Customer _selectedNPC;
 
     #endregion
 
@@ -57,11 +57,11 @@ public class BoxController : MonoBehaviour {
         return _selectedNPC != null;
     }
 
-    public NPC GetSelectedNPC() {
+    public Customer GetSelectedNPC() {
         return _selectedNPC;
     }
 
-    public void SelectNPC(NPC npc) {
+    public void SelectNPC(Customer npc) {
         if(_selectedNPC != null) {
             Debug.LogWarning("An NPC is already selected.");
             return;

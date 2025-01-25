@@ -2,11 +2,13 @@ using UnityEditorInternal;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Cooking/Food Item")]
-public class FoodItem : ScriptableObject {
+public class FoodItemData : ScriptableObject {
     [Header("Food Details")]
     public string FoodName;
     public CookingStage[] CookingStages;
     public FoodQuality CurrentQuality;
+    public int cost;
+/*    public GameObject prefab; // Associated prefab*/
 
     public CookingStage GetCurrentCookingStage(int stageIndex) {
         if(stageIndex >= 0 && stageIndex < CookingStages.Length) {

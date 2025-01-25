@@ -4,16 +4,23 @@ using UnityEngine;
 public class TabUI : MonoBehaviour {
     #region Variables
 
-    public GameObject MainTabPanel;
-    public GameObject balanceUi;
+
+    #region LinkedTabScripts
+    public FinanceManager financeManager;
+    #endregion
+
+    public GameObject MainTabPanel;  // Balance, General
     public TextMeshProUGUI balanceTxt;
 
-    public decimal businessBalance;
-    public FinanceManager financeManager;
+    private decimal BusinessBalance;
+
 
     #endregion
 
     #region Unity Methods
+    private void Awake() {
+        Initialize();
+    }
 
     private void Start() {
         HideTab();
@@ -30,7 +37,13 @@ public class TabUI : MonoBehaviour {
     #endregion
 
     void Initialize() {
-        businessBalance = financeManager.GetBusinessBalance();
+        LinkScripts();
+    }
+
+    void LinkScripts() {
+        if(financeManager == null) 
+            financeManager = FindFirstObjectByType<FinanceManager>();
+
     }
 
     #region Helper Methods
@@ -43,13 +56,17 @@ public class TabUI : MonoBehaviour {
         }
     }
 
+
     public void ShowTab() {
         MainTabPanel.SetActive(true);
+        BusinessBalance = financeManager.GetBusinessBalance();
+        balanceTxt.text = "$ "+ BusinessBalance.ToString();
     }
 
     public void HideTab() {
         MainTabPanel.SetActive(false);
     }
+
 
     #endregion
 }

@@ -7,7 +7,7 @@ public class Stove : CookingTable {
             yield break;
 
         var foodBox = slot.FoodBox;
-        var currentStage = foodBox.FoodItem?.GetCurrentCookingStage(foodBox.CurrentStageIndex);
+        var currentStage = foodBox.FoodItemData?.GetCurrentCookingStage(foodBox.CurrentStageIndex);
 
         if(currentStage == null)
             yield break;

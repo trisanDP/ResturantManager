@@ -1,6 +1,6 @@
 // FoodObject.cs
 using UnityEngine;
-using static FoodItem;
+using static FoodItemData;
 
 public class FoodObject : MonoBehaviour {
 
@@ -8,7 +8,7 @@ public class FoodObject : MonoBehaviour {
 
     [Header("Food Settings")]
     public CookingState CurrentCookingState = CookingState.Raw; // Current cooking state
-    public FoodItem FoodItem; // Associated food item data
+    public FoodItemData FoodItemData; // Associated food item data
     public string FoodName; // Name of the food
 
     public float CookingProgress { get; private set; } = 0f; // Cooking progress percentage
@@ -42,7 +42,7 @@ public class FoodObject : MonoBehaviour {
 
     // Gets the current cooking stage from the food item
     public CookingStage GetCurrentStage() {
-        return FoodItem?.GetCurrentCookingStage(CurrentStageIndex);
+        return FoodItemData?.GetCurrentCookingStage(CurrentStageIndex);
     }
 
     // Advances to the next cooking stage
@@ -61,8 +61,8 @@ public class FoodObject : MonoBehaviour {
 
     // Ensures the food name matches the associated food item
     private void OnValidate() {
-        if(FoodItem != null) {
-            FoodName = FoodItem.FoodName;
+        if(FoodItemData != null) {
+            FoodName = FoodItemData.FoodName;
         }
     }
 

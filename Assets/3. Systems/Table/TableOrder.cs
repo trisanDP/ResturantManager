@@ -2,9 +2,9 @@ using UnityEngine;
 using System.Collections.Generic;
 
 public class TableOrder {
-    public Dictionary<NPC, FoodItem> Orders { get; private set; } = new Dictionary<NPC, FoodItem>();
+    public Dictionary<Customer, FoodItemData> Orders { get; private set; } = new Dictionary<Customer, FoodItemData>();
 
-    public void AddOrder(NPC npc, FoodItem foodItem) {
+    public void AddOrder(Customer npc, FoodItemData foodItem) {
         if(Orders.ContainsKey(npc)) {
             Debug.LogWarning($"{npc.name} already has an order.");
             return;
@@ -13,17 +13,17 @@ public class TableOrder {
         Debug.Log($"{npc.name} ordered {foodItem.FoodName}.");
     }
 
-    public void RemoveOrder(NPC npc) {
+    public void RemoveOrder(Customer npc) {
         if(Orders.Remove(npc)) {
             Debug.Log($"{npc.name}'s order has been removed.");
         }
     }
 
-    public FoodItem GetOrder(NPC npc) {
+    public FoodItemData GetOrder(Customer npc) {
         return Orders.TryGetValue(npc, out var foodItem) ? foodItem : null;
     }
 
-    public NPC GetNPCForFood(FoodItem foodItem) {
+    public Customer GetNPCForFood(FoodItemData foodItem) {
         foreach(var order in Orders) {
             if(order.Value == foodItem) {
                 return order.Key;
@@ -32,7 +32,7 @@ public class TableOrder {
         return null;
     }
 
-    public bool HasOrder(NPC npc) {
+    public bool HasOrder(Customer npc) {
         return Orders.ContainsKey(npc);
     }
 }

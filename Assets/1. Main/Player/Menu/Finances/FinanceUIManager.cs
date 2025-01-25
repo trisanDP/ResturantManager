@@ -1,8 +1,15 @@
+using TMPro;
 using UnityEngine;
 
 public class FinanceUIManager : MonoBehaviour {
 
     [SerializeField] private FinanceManager financeManager;
+
+    public GameObject TransactionHistoryGroup;
+    public GameObject BusinessBalanceGroup;
+
+    public TextMeshProUGUI balanceUItxt;
+
 
     private void Awake() {
         financeManager = GameManager.Instance.FinanceManager;
@@ -13,7 +20,7 @@ public class FinanceUIManager : MonoBehaviour {
         EventManager.Subscribe("OnTabPressed", ToggleTabUI);
 
         // Subscribe to finance events
-        financeManager.OnPersonalBalanceChanged.AddListener(UpdatePersonalBalanceUI);
+        //financeManager.OnPersonalBalanceChanged.AddListener(UpdatePersonalBalanceUI);
         financeManager.OnBusinessBalanceChanged.AddListener(UpdateBusinessBalanceUI);
     }
 
@@ -22,7 +29,7 @@ public class FinanceUIManager : MonoBehaviour {
         EventManager.Unsubscribe("OnTabPressed", ToggleTabUI);
 
         // Unsubscribe from finance events
-        financeManager.OnPersonalBalanceChanged.RemoveListener(UpdatePersonalBalanceUI);
+        //financeManager.OnPersonalBalanceChanged.RemoveListener(UpdatePersonalBalanceUI);
         financeManager.OnBusinessBalanceChanged.RemoveListener(UpdateBusinessBalanceUI);
     }
 
@@ -30,11 +37,9 @@ public class FinanceUIManager : MonoBehaviour {
         // Toggle Tab UI
     }
 
-    private void UpdatePersonalBalanceUI() {
-        // Update personal balance UI
-    }
-
     private void UpdateBusinessBalanceUI() {
         // Update business balance UI
+        decimal amount = financeManager.GetBusinessBalance();
+        balanceUItxt.text = "" + amount;
     }
 }
