@@ -17,9 +17,11 @@ public class ShopLogicManager : MonoBehaviour {
 
     private void Awake() {
         itemDatabase = Resources.Load<ItemDatabase>("ItemDatabase");
+    }
+    private void Start() {
+
         financeManager = GameManager.Instance.FinanceManager; // Get the finance manager directly
     }
-
     #region Cart Management
 
     public void AddToCart(FoodItemData item, int quantity = 1) {
@@ -43,35 +45,23 @@ public class ShopLogicManager : MonoBehaviour {
         Debug.Log("Cart cleared.");
     }
 
-    #endregion
-
-    #region Purchase Logic
-
-    public bool TryPurchase(FoodItemData item) {
-        if(financeManager.GetBusinessBalance() >= item.cost) {
-            financeManager.AddExpenditure(item.cost, $"Purchased {item.FoodName}");
-            return true;
-        }
-        return false;
-    }
-
-    public IEnumerator PurchaseItems(float delay) {
+    public decimal GetTotalCartCost() {
+        decimal totalCost = 0;
         foreach(var cartItem in cartItems) {
-            var item = cartItem.Key;
-            var quantity = cartItem.Value;
-
-            for(int i = 0; i < quantity; i++) {
-                if(TryPurchase(item)) {
-                    yield return new WaitForSeconds(delay);
-                } else {
-                    Debug.LogError("Insufficient funds for purchase.");
-                    yield break;
-                }
-            }
+            totalCost += (decimal)cartItem.Key.cost * cartItem.Value; // Convert item cost to decimal
         }
-
-        ClearCart();
+        return totalCost;
     }
+
+    public bool CanAffordCart() {
+        return financeManager.GetBusinessBalance() >= GetTotalCartCost(); // Compare using decimal
+    }
+
+    public void DeductCartCost() {
+        decimal totalCost = GetTotalCartCost();
+        financeManager.AddExpenditure(totalCost, "Purchased cart items"); // Use decimal total cost
+    }
+
 
     #endregion
 }

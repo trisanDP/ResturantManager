@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using RestaurantManagement;
 
 public class Table : MonoBehaviour, IInteractable {
     #region Fields and Properties

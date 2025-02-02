@@ -6,6 +6,13 @@ public static class EventManager {
     // Dictionary for input-related events
     private static readonly Dictionary<string, Action<bool>> inputEventDictionary = new Dictionary<string, Action<bool>>();
 
+
+    public static event Action<OrderData> OnOrderPlaced;
+    public static event Action<OrderData> OnOrderCompleted;
+    public static event Action<OrderData> OnBillRequested;
+
+
+    #region CustomeEventSystem
     // Subscribe a listener to an input event
     public static void Subscribe(string eventName, Action<bool> listener) {
         if(!inputEventDictionary.ContainsKey(eventName))
@@ -33,4 +40,26 @@ public static class EventManager {
         }
         return null; // No subscribers or event doesn't exist
     }
+
+#endregion
+
+    #region Methods to Raise Events
+
+    public static void OrderPlaced(OrderData order) {
+        OnOrderPlaced?.Invoke(order);
+    }
+
+    public static void OrderCompleted(OrderData order) {
+        OnOrderCompleted?.Invoke(order);
+    }
+
+    public static void BillRequested(OrderData order) {
+        OnBillRequested?.Invoke(order);
+    }
+
+    #endregion
+}
+
+public class OrderData {
+
 }

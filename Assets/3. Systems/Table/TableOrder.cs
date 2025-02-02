@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using RestaurantManagement;
 
 public class TableOrder {
     public Dictionary<Customer, FoodItemData> Orders { get; private set; } = new Dictionary<Customer, FoodItemData>();

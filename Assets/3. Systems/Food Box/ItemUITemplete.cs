@@ -2,31 +2,32 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
-public class ItemUITemplete : MonoBehaviour {
-    #region Fields
+namespace RestaurantManagement {
+    public class ItemUITemplete : MonoBehaviour {
+        #region Fields
 
-    public TextMeshProUGUI foodNameText;
-    public TextMeshProUGUI costText;
-    public Button addToCartButton;
-    public TextMeshProUGUI amount;
+        public TextMeshProUGUI foodNameText;
+        public TextMeshProUGUI costText;
+        public Button addToCartButton;
+        public TextMeshProUGUI amount;
 
-    private FoodItemData itemData;
-    private ShopLogicManager shopLogicManager;
+        private FoodItemData itemData;
+        private ShopLogicManager shopLogicManager;
 
-    #endregion
+        #endregion
 
-    #region Initialization
+        #region Initialization
 
-    public void Initialize(FoodItemData itemData, ShopLogicManager shopLogicManager) {
-        this.itemData = itemData;
-        this.shopLogicManager = shopLogicManager;
+        public void Initialize(FoodItemData itemData, ShopLogicManager shopLogicManager) {
+            this.itemData = itemData;
+            this.shopLogicManager = shopLogicManager;
 
-        foodNameText.text = itemData.FoodName;
-        costText.text = $"${itemData.cost}";
+            foodNameText.text = itemData.FoodName;
+            costText.text = $"${itemData.cost}";
 
-        addToCartButton.onClick.AddListener(() => shopLogicManager.AddToCart(itemData));
+            addToCartButton.onClick.AddListener(() => shopLogicManager.AddToCart(itemData));
+        }
+
+        #endregion
     }
-
-    #endregion
 }
-
