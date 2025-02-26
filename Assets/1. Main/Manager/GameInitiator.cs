@@ -10,7 +10,7 @@ public class GameInitiator : MonoBehaviour
     [SerializeField]private Camera m_Camera;
     [SerializeField]private Light m_Light;
     [SerializeField]private UpdateManager m_UpdateManager;
-    [SerializeField]private PlayerScript playerScript;
+/*    [SerializeField]private PlayerScript playerScript;*/
     [SerializeField]private GameObject Level;
 
 

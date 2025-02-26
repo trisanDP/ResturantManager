@@ -1,21 +1,16 @@
-using Mono.Cecil;
-using System.Collections.Generic;
-using System.Xml.Linq;
 using UnityEngine;
+using NPCSystem;
 
 namespace NPCSystem {
     public class EmployeeScript : MonoBehaviour {
-        /*[HideInInspector]*/
+        #region Fields
         public EmployeeData empData;
-        /*[HideInInspector]*/
         public EmployeeDatabase database;
+        #endregion
 
         #region Unity Lifecycle Methods
-
         private void Start() {
             database = Resources.Load<EmployeeDatabase>("EmployeeDatabase");
-
-
             if(empData == null) {
                 Debug.Log("NPCdata is null");
             }
@@ -25,7 +20,6 @@ namespace NPCSystem {
                 Debug.Log($"{empData.npcName} is being used {empData.isUsed} times");
                 Destroy(gameObject);
             }
-
             database.RegisterActiveNPCs(this);
         }
 
@@ -35,17 +29,12 @@ namespace NPCSystem {
                 empData.conectedNPC = this;
             }
         }
-        void OnEnable() {
-
-        }
 
         private void OnDestroy() {
             if(empData != null) {
                 empData.isUsed = 0;
             }
         }
-
         #endregion
-
     }
 }

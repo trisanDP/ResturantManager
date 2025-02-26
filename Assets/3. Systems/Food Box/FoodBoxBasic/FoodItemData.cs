@@ -1,4 +1,3 @@
-using UnityEditorInternal;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "Cooking/Food Item")]

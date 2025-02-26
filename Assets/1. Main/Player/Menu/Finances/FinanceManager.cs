@@ -7,9 +7,9 @@ public class FinanceManager : MonoBehaviour {
 
     #region Variables
     #region Fields
-    [SerializeField] decimal personalBalance = 1000m;
     [SerializeField] public decimal businessBalance = 5000m;
 
+    public string balance;
     private List<Transaction> transactionHistory = new();
     #endregion
 
@@ -29,7 +29,15 @@ public class FinanceManager : MonoBehaviour {
 /*    public decimal GetPersonalBalance() => personalBalance;*/
     public decimal GetBusinessBalance() => businessBalance;
 
-    public void DepositToBusiness(decimal amount) {
+    public void Start() {
+        businessBalance = 0;
+    }
+
+    public void Update() {
+        balance = businessBalance.ToString();
+    }
+
+/*    public void DepositToBusiness(decimal amount) {
         if(personalBalance >= amount) {
             personalBalance -= amount;
             businessBalance += amount;
@@ -37,7 +45,7 @@ public class FinanceManager : MonoBehaviour {
             RecordTransaction(amount, TransactionType.TransferToBusiness);
 
             // Trigger balance update events
-/*            OnPersonalBalanceChanged?.Invoke();*/
+*//*            OnPersonalBalanceChanged?.Invoke();*//*
             OnBusinessBalanceChanged?.Invoke();
         } else {
             Debug.LogError("Insufficient personal funds.");
@@ -56,7 +64,7 @@ public class FinanceManager : MonoBehaviour {
         } else {
             Debug.LogError("Insufficient business funds.");
         }
-    }
+    }*/
     #endregion
 
     public void GetLoan() {

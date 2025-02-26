@@ -3,16 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 
 public static class EventManager {
+
+    #region Input-Related Custom Events
     // Dictionary for input-related events
     private static readonly Dictionary<string, Action<bool>> inputEventDictionary = new Dictionary<string, Action<bool>>();
 
-
-    public static event Action<OrderData> OnOrderPlaced;
-    public static event Action<OrderData> OnOrderCompleted;
-    public static event Action<OrderData> OnBillRequested;
-
-
-    #region CustomeEventSystem
     // Subscribe a listener to an input event
     public static void Subscribe(string eventName, Action<bool> listener) {
         if(!inputEventDictionary.ContainsKey(eventName))
@@ -40,26 +35,23 @@ public static class EventManager {
         }
         return null; // No subscribers or event doesn't exist
     }
+    #endregion
 
-#endregion
+    #region Order-Related Events
+/*    public static event Action<TableOrder> OnOrderPlaced;
+    public static event Action<TableOrder> OnOrderCompleted;
+    public static event Action<TableOrder> OnBillRequested;
 
-    #region Methods to Raise Events
-
-    public static void OrderPlaced(OrderData order) {
+    public static void OrderPlaced(TableOrder order) {
         OnOrderPlaced?.Invoke(order);
     }
 
-    public static void OrderCompleted(OrderData order) {
+    public static void OrderCompleted(TableOrder order) {
         OnOrderCompleted?.Invoke(order);
-    }
+    }*/
 
-    public static void BillRequested(OrderData order) {
+/*    public static void BillRequested(TableOrder order) {
         OnBillRequested?.Invoke(order);
-    }
-
+    }*/
     #endregion
-}
-
-public class OrderData {
-
 }

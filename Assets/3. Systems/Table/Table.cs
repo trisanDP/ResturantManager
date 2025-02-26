@@ -1,155 +1,129 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System.Linq;
-using RestaurantManagement;
 
-public class Table : MonoBehaviour, IInteractable {
-    #region Fields and Properties
+namespace RestaurantManagement {
+    public class Table : MonoBehaviour, IInteractable {
+        #region Fields and Properties
+        [Header("Settings")]
+        [SerializeField] private Transform[] seatingPositions;
+        [SerializeField] private Transform[] foodPlacementPoints;
 
-    [Header("Table Settings")]
-    public int ChairCapacity = 4;
-    public Transform[] FoodPlacementPoints;
-    public Transform[] chairs;
+        private Customer[] seatedCustomers;
+        private bool[] seatReserved;
+        private Dictionary<Customer, int> reservedSeats = new Dictionary<Customer, int>();
 
-    private FoodObject[] _placedFoods;
-    private Customer[] _seatedNPCs;
-    private TableOrder _tableOrder;
+        private TableOrder orders = new TableOrder();
 
-    #endregion
+        public bool HasAvailableSeats => GetAvailableSeatIndex() != -1;
+        #endregion
 
-    #region Initialization
-
-    private void Start() {
-        _placedFoods = new FoodObject[FoodPlacementPoints.Length];
-        _seatedNPCs = new Customer[chairs.Length];
-        _tableOrder = new TableOrder();
-    }
-
-    #endregion
-
-    #region IInteractables
-    public void OnFocusEnter() {
-        // Debug.Log($"Focusing on table: {name}");
-    }
-
-    public void OnFocusExit() {
-        // Debug.Log($"Stopped focusing on table: {name}");
-    }
-
-    public void Interact(BoxController controller) {
-        if(controller.HasCarriedBox()) {
-            PlaceFood(controller);
-        } else if(controller.HasSelectedNPC()) {
-            Customer selectedNPC = controller.GetSelectedNPC();
-            SeatNPC(selectedNPC, GetRandomAvailableChairIndex());
-            controller.DeselectNPC();
+        #region Initialization
+        private void Start() {
+            seatedCustomers = new Customer[seatingPositions.Length];
+            seatReserved = new bool[seatingPositions.Length];
         }
-    }
-    #endregion
+        #endregion
 
-    #region Order Management
-
-    public void TakeOrder(Customer npc, FoodItemData foodItem) {
-        _tableOrder.AddOrder(npc, foodItem);
-    }
-    public void PlaceFood(BoxController controller) {
-        var carriedBox = controller.GetCarriedBox();
-        var foodBox = carriedBox.GetComponent<FoodObject>();
-
-        if(foodBox.CurrentCookingState != CookingState.Cooked) {
-            Debug.LogWarning("Only fully cooked food can be placed on the table.");
-            return;
-        }
-
-        Customer npc = _tableOrder.GetNPCForFood(foodBox.FoodItemData);
-        if(npc == null) {
-            Debug.LogWarning("No NPC at this table ordered this food.");
-            return;
-        }
-
-        int npcIndex = System.Array.IndexOf(_seatedNPCs, npc);
-        if(npcIndex == -1) {
-            Debug.LogWarning($"{npc.name} is not seated at this table.");
-            return;
-        }
-
-        _placedFoods[npcIndex] = foodBox;
-        carriedBox.Attach(FoodPlacementPoints[npcIndex], Vector3.zero, Quaternion.identity);
-        controller.ClearCarriedBox();
-
-        Debug.Log($"{foodBox.FoodName} placed in front of {npc.name}.");
-
-        // Notify the NPC to start eating
-        npc.NotifyFoodPlaced(foodBox);
-    }
-
-    #endregion
-
-    #region Chair Management
-
-    public void SeatNPC(Customer npc, int chairIndex) {
-        if(chairIndex < 0 || chairIndex >= chairs.Length || _seatedNPCs[chairIndex] != null) {
-            Debug.LogWarning("Invalid or occupied chair.");
-            return;
-        }
-
-        _seatedNPCs[chairIndex] = npc;
-        npc.TeleportTo(chairs[chairIndex].position, chairs[chairIndex].rotation);
-        npc.AssignTable(this);
-    }
-
-    public void ClearNPC(int chairIndex) {
-        if(chairIndex < 0 || chairIndex >= chairs.Length) return;
-
-        _seatedNPCs[chairIndex] = null;
-    }
-
-    public void SeatNPCsRandomly(Customer[] npcs) {
-        if(npcs == null || npcs.Length == 0) {
-            Debug.LogWarning("No NPCs provided to seat.");
-            return;
-        }
-
-        // Create a list of available chair indices and shuffle it
-        List<int> availableChairs = GetAvailableChairIndices();
-        availableChairs = availableChairs.OrderBy(_ => Random.value).ToList();
-
-        int npcIndex = 0;
-
-        foreach(int chairIndex in availableChairs) {
-            if(npcIndex >= npcs.Length) break; // Stop if all NPCs are seated
-
-            SeatNPC(npcs[npcIndex], chairIndex);
-            npcIndex++;
-        }
-
-        if(npcIndex < npcs.Length) {
-            Debug.LogWarning("Not all NPCs could be seated. Some chairs are occupied or insufficient.");
-        }
-    }
-
-    private List<int> GetAvailableChairIndices() {
-        List<int> availableChairs = new List<int>();
-
-        for(int i = 0; i < chairs.Length; i++) {
-            if(_seatedNPCs[i] == null) {
-                availableChairs.Add(i);
+        #region Seating Management
+        private int GetAvailableSeatIndex() {
+            for(int i = 0; i < seatingPositions.Length; i++) {
+                if(seatedCustomers[i] == null && !seatReserved[i]) {
+                    return i;
+                }
             }
-        }
-
-        return availableChairs;
-    }
-
-    private int GetRandomAvailableChairIndex() {
-        List<int> availableChairs = GetAvailableChairIndices();
-
-        if(availableChairs.Count == 0) {
-            Debug.LogWarning("No available chairs.");
             return -1;
         }
 
-        return availableChairs[Random.Range(0, availableChairs.Count)];
-    }
+        // Reserves a seat for the given customer.
+        public bool Reserve(Customer customer) {
+            int index = GetAvailableSeatIndex();
+            if(index != -1) {
+                seatReserved[index] = true;
+                reservedSeats[customer] = index;
+                return true;
+            }
+            return false;
+        }
 
-    #endregion
+        // Returns the reserved chair position for the customer.
+        public Vector3 GetReservedChairPosition(Customer customer) {
+            if(reservedSeats.TryGetValue(customer, out int index)) {
+                return seatingPositions[index].position;
+            }
+            // Fallback: return any available seat position.
+            int availableIndex = GetAvailableSeatIndex();
+            return availableIndex != -1 ? seatingPositions[availableIndex].position : transform.position;
+        }
+
+        public void SeatCustomer(Customer customer) {
+            if(reservedSeats.TryGetValue(customer, out int index)) {
+                seatedCustomers[index] = customer;
+                seatReserved[index] = false; // Reservation fulfilled
+                reservedSeats.Remove(customer);
+                customer.AssignSeat(seatingPositions[index].position, seatingPositions[index].rotation);
+            }
+        }
+
+        public void RemoveCustomer(Customer customer) {
+            int seatIndex = System.Array.IndexOf(seatedCustomers, customer);
+            if(seatIndex != -1) {
+                seatedCustomers[seatIndex] = null; // Free the seat
+            }
+        }
+        #endregion
+
+        #region Order Management
+        public void TakeOrder(Customer customer, FoodItemData food) {
+            orders.AddOrder(customer, food);
+            RestaurantManager.Instance.AddPendingOrder(this);
+        }
+
+        public void DeliverFood(FoodObject food) {
+            Customer targetCustomer = orders.GetCustomerForFood(food.FoodItemData);
+            if(targetCustomer != null) {
+                PlaceFoodAtTable(food, targetCustomer);
+                targetCustomer.NotifyFoodDelivered(food);
+            }
+        }
+
+        private void PlaceFoodAtTable(FoodObject food, Customer customer) {
+            int seatIndex = System.Array.IndexOf(seatedCustomers, customer);
+            if(seatIndex != -1 && seatIndex < foodPlacementPoints.Length) {
+                food.transform.SetParent(foodPlacementPoints[seatIndex]);
+                food.transform.localPosition = Vector3.zero;
+                food.transform.localRotation = Quaternion.identity;
+            }
+        }
+        #endregion
+
+        #region IInteractable Implementation
+        public void OnFocusEnter() {
+            // Optionally highlight table
+        }
+        public void OnFocusExit() {
+            // Remove highlight
+        }
+        public void Interact(BoxController controller) {
+            if(controller.HasSelectedNPC()) {
+                HandleCustomerSeating(controller);
+            } else if(controller.HasCarriedBox()) {
+                HandleFoodDelivery(controller);
+            }
+        }
+        private void HandleCustomerSeating(BoxController controller) {
+            Customer customer = controller.GetSelectedNPC();
+            if(HasAvailableSeats && Reserve(customer)) {
+                SeatCustomer(customer);
+                controller.DeselectNPC();
+            }
+        }
+        private void HandleFoodDelivery(BoxController controller) {
+            FoodObject food = controller.GetCarriedBox()?.GetComponent<FoodObject>();
+            if(food != null && food.CurrentCookingState == CookingState.Cooked) {
+                DeliverFood(food);
+                controller.ClearCarriedBox();
+            }
+        }
+        #endregion
+    }
 }

@@ -9,9 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 377263771533106958}
+  - component: {fileID: 8224179681619470926}
   m_Layer: 3
   m_Name: Chair
-  m_TagString: Untagged
+  m_TagString: Chair
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -25,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 8709550157506544}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.908, y: 0, z: 0.007}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -35,6 +36,26 @@ Transform:
   - {fileID: 1597919564342410798}
   m_Father: {fileID: 7139521852598672974}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8224179681619470926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8709550157506544}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SerializedVersion: 0
+  m_OverrideArea: 0
+  m_Area: 0
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 1
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffff
 --- !u!1 &1935074573512505260
 GameObject:
   m_ObjectHideFlags: 0
@@ -46,9 +67,9 @@ GameObject:
   - component: {fileID: 1597919564342410798}
   - component: {fileID: 6949060688077437269}
   - component: {fileID: 4195917420085680654}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: chair04
-  m_TagString: Untagged
+  m_TagString: Chair
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -132,9 +153,9 @@ GameObject:
   - component: {fileID: 3355911734637764482}
   - component: {fileID: 4643268846162607852}
   - component: {fileID: 2792178475655335645}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: chair01
-  m_TagString: Untagged
+  m_TagString: Chair
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -216,7 +237,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1833570616091882945}
-  m_Layer: 0
+  - component: {fileID: 961315556542360500}
+  m_Layer: 3
   m_Name: Dining_Table
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -239,6 +261,23 @@ Transform:
   - {fileID: 6111371673864944973}
   m_Father: {fileID: 7139521852598672974}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &961315556542360500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4375468206820666232}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SerializedVersion: 0
+  m_Size: {x: 1.6, y: 1.21, z: 4.31}
+  m_Center: {x: 0, y: 0.58, z: 0}
+  m_Area: 1
+  m_AffectedAgents: ffffffff
 --- !u!1 &4668871922535341388
 GameObject:
   m_ObjectHideFlags: 0
@@ -250,7 +289,7 @@ GameObject:
   - component: {fileID: 6111371673864944973}
   - component: {fileID: 8546200360420878736}
   - component: {fileID: 2159024992442663916}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Dining_table
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -350,7 +389,7 @@ Transform:
   m_GameObject: {fileID: 4876224708266392504}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.18, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -642,8 +681,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 3.0629706}
-  m_Center: {x: 0, y: 0, z: 1.0314853}
+  m_Size: {x: 1.9634504, y: 1.3394358, z: 4.151181}
+  m_Center: {x: -0.27649164, y: 0.16971791, z: 0.00047016123}
 --- !u!114 &1607485678212539595
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -656,13 +695,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0365d6f7a37a5e24e8de4fc32f125030, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FoodPlacementPoints:
+  seatingPositions:
+  - {fileID: 3355911734637764482}
+  - {fileID: 7809332447165395531}
+  - {fileID: 6997667070344172813}
+  - {fileID: 1597919564342410798}
+  foodPlacementPoints:
   - {fileID: 5620085600770915032}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  NPCChairs:
-  - {fileID: 0}
+  - {fileID: 3635002273181145678}
+  - {fileID: 2760782123255592069}
+  - {fileID: 8482924965830035262}
 --- !u!1 &7303959654983108079
 GameObject:
   m_ObjectHideFlags: 0
@@ -674,9 +716,9 @@ GameObject:
   - component: {fileID: 6997667070344172813}
   - component: {fileID: 1299982992197135095}
   - component: {fileID: 5423657335386812292}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: chair03
-  m_TagString: Untagged
+  m_TagString: Chair
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -760,9 +802,9 @@ GameObject:
   - component: {fileID: 7809332447165395531}
   - component: {fileID: 4049005300787733667}
   - component: {fileID: 4124505100715915535}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: chair02
-  m_TagString: Untagged
+  m_TagString: Chair
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

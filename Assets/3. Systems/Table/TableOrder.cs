@@ -1,39 +1,27 @@
-using UnityEngine;
 using System.Collections.Generic;
-using RestaurantManagement;
 
-public class TableOrder {
-    public Dictionary<Customer, FoodItemData> Orders { get; private set; } = new Dictionary<Customer, FoodItemData>();
-
-    public void AddOrder(Customer npc, FoodItemData foodItem) {
-        if(Orders.ContainsKey(npc)) {
-            Debug.LogWarning($"{npc.name} already has an order.");
-            return;
+namespace RestaurantManagement {
+    public class TableOrder {
+        // Maps each customer to their ordered food
+        // Maps each customer to their ordered food
+        public Dictionary<Customer, FoodItemData> CustomerOrders { get; } = new Dictionary<Customer, FoodItemData>();
+        // Adds an order for a specific customer
+        public void AddOrder(Customer customer, FoodItemData food) {
+            if(customer == null || food == null) return;
+            CustomerOrders[customer] = food;
         }
-        Orders[npc] = foodItem;
-        Debug.Log($"{npc.name} ordered {foodItem.FoodName}.");
-    }
 
-    public void RemoveOrder(Customer npc) {
-        if(Orders.Remove(npc)) {
-            Debug.Log($"{npc.name}'s order has been removed.");
+        // Gets the food ordered by a specific customer
+        public FoodItemData GetFoodForCustomer(Customer customer) {
+            return CustomerOrders.ContainsKey(customer) ? CustomerOrders[customer] : null;
         }
-    }
 
-    public FoodItemData GetOrder(Customer npc) {
-        return Orders.TryGetValue(npc, out var foodItem) ? foodItem : null;
-    }
-
-    public Customer GetNPCForFood(FoodItemData foodItem) {
-        foreach(var order in Orders) {
-            if(order.Value == foodItem) {
-                return order.Key;
+        // Gets the customer who ordered a specific food (for food delivery)
+        public Customer GetCustomerForFood(FoodItemData food) {
+            foreach(var entry in CustomerOrders) {
+                if(entry.Value == food) return entry.Key;
             }
+            return null;
         }
-        return null;
-    }
-
-    public bool HasOrder(Customer npc) {
-        return Orders.ContainsKey(npc);
     }
 }

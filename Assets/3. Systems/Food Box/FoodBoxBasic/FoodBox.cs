@@ -18,6 +18,15 @@ public class FoodObject : MonoBehaviour {
 
     #endregion
 
+    #region UnityRuntime Methods
+    private void Start() {
+        if(FoodItemData != null) {
+            FoodName = FoodItemData.FoodName;
+        }else
+            Debug.LogError("FoodItemData is null");
+    }
+    #endregion
+
     #region Cooking Methods
 
     // Updates cooking progress and adjusts state accordingly

@@ -17,10 +17,14 @@ public class ShopUIManager : MonoBehaviour {
 
     #endregion
 
+    private void Awake() {
+        Debug.Log("hello");
+        
+    }
     private void Start() {
         shopLogicManager = FindFirstObjectByType<ShopLogicManager>(); // Directly get the ShopLogicManager
         PopulateShopUI();
-        Hide();
+        Debug.Log("hello");
     }
 
     #region UI Management
@@ -43,14 +47,6 @@ public class ShopUIManager : MonoBehaviour {
             ui.addToCartButton.onClick.AddListener(() => shopLogicManager.AddToCart(item));*/
             index++;
         }
-    }
-
-    public void Show() {
-        ShopUiGroup.SetActive(true);
-    }
-
-    public void Hide() {
-        ShopUiGroup.SetActive(false);
     }
 
     #endregion
