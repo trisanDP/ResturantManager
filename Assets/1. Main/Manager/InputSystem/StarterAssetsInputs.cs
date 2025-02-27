@@ -56,9 +56,10 @@ namespace StarterAssets {
         }
 
         public void OnTab(InputAction.CallbackContext context) {
+
             if(context.performed) {
                 tabMenuOpen = !tabMenuOpen;
-
+                Debug.Log("Count");
                 // Trigger Tab Toggle Event
                 EventManager.Trigger("TabToggle", tabMenuOpen);
 

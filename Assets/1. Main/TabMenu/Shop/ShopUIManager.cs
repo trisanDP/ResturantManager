@@ -6,48 +6,35 @@ public class ShopUIManager : MonoBehaviour {
 
     [Header("UI Elements")]
     public Transform shopContent; // Parent for UI elements
-    public GameObject ShopUiTemplete; // Prefab for UI elements
+    public GameObject ShopUITemplate; // Prefab for UI elements
 
     private ShopLogicManager shopLogicManager;
+    public GameObject ShopUIGroup;
 
-    public GameObject ShopUiGroup;
-
-    public float VerticalOffset=100f;
-    public float HorizontalOffset=100f;
-
+    public float VerticalOffset = 100f;
+    public float HorizontalOffset = 100f;
     #endregion
 
-    private void Awake() {
-        Debug.Log("hello");
-        
-    }
     private void Start() {
-        shopLogicManager = FindFirstObjectByType<ShopLogicManager>(); // Directly get the ShopLogicManager
+        shopLogicManager = FindFirstObjectByType<ShopLogicManager>();
         PopulateShopUI();
-        Debug.Log("hello");
     }
 
     #region UI Management
-
     private void PopulateShopUI() {
-     
         int index = 0;
-
         foreach(var item in shopLogicManager.itemDatabase.activeItems) {
-            var foodBox = Instantiate(ShopUiTemplete, shopContent);
+            var foodBox = Instantiate(ShopUITemplate, shopContent);
             var ui = foodBox.GetComponent<ItemUITemplete>();
             ui.Initialize(item, shopLogicManager);
 
             // Position adjustment
             var rectTransform = foodBox.GetComponent<RectTransform>();
             if(rectTransform != null) {
-                rectTransform.anchoredPosition = new Vector2(HorizontalOffset * -index,VerticalOffset * -index );
+                rectTransform.anchoredPosition = new Vector2(HorizontalOffset * -index, VerticalOffset * -index);
             }
-/*
-            ui.addToCartButton.onClick.AddListener(() => shopLogicManager.AddToCart(item));*/
             index++;
         }
     }
-
     #endregion
 }

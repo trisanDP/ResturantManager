@@ -5,36 +5,32 @@ using UnityEngine.UI;
 public class MenuManager : MonoBehaviour {
     #region Variables
 
+    public static MenuManager Instance;
 
     #region LinkedTabScripts
     public FinanceManager financeManager;
-
     #endregion
 
-    [Header("Pannel")]
-    public GameObject MainTabPanel;  // Balance, General
-    public GameObject ShopPannel; 
-    public GameObject EmployeePannel;
+    [Header("Panel")]
+    public GameObject MainTabWindow;
+    public GameObject HomePanel;
+    public GameObject ShopPanel;
+    public GameObject EmployeePanel;
 
     [Header("Menu UIs")]
     public TextMeshProUGUI balanceTxt;
     public TextMeshPro time;
-
-
     public Button close;
-
     private decimal BusinessBalance;
-
 
     #endregion
 
-    public static MenuManager Instance;
     #region Unity Methods
     private void Awake() {
         if(Instance == null) {
             Instance = this;
         } else {
-            Destroy(Instance);
+            Destroy(gameObject);
         }
         Initialize();
     }
@@ -46,7 +42,6 @@ public class MenuManager : MonoBehaviour {
     private void OnDisable() {
         EventManager.Unsubscribe("TabToggle", HandleTabToggle);
     }
-
     #endregion
 
     void Initialize() {
@@ -57,39 +52,35 @@ public class MenuManager : MonoBehaviour {
     void LinkScripts() {
         if(financeManager == null)
             financeManager = FindFirstObjectByType<FinanceManager>();
-
     }
 
     #region Helper Methods
-
     private void HandleTabToggle(bool isTabOpen) {
-        if(isTabOpen) {  
+        if(isTabOpen) {
             ShowTab();
         } else {
             HideTab();
         }
     }
 
-
     public void ShowTab() {
-        MainTabPanel.SetActive(true);
+        MainTabWindow.SetActive(true);
+        HomePanel.SetActive(true);
         BusinessBalance = financeManager.GetBusinessBalance();
         balanceTxt.text = "$ " + BusinessBalance.ToString();
     }
 
     public void HideTab() {
-        MainTabPanel.SetActive(false);
+        HomePanel.SetActive(false);
+        MainTabWindow.SetActive(false);
         Btn_CloseShop();
-
     }
 
     public void Btn_OpenShop() {
-        ShopPannel.SetActive(true);
+        ShopPanel.SetActive(true);
     }
     public void Btn_CloseShop() {
-        ShopPannel.SetActive(false );
+        ShopPanel.SetActive(false);
     }
-
     #endregion
-
 }
