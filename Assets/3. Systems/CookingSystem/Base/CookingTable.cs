@@ -62,7 +62,7 @@ public abstract class CookingTable : MonoBehaviour, IInteractable {
 
         var currentStage = foodObject.GetCurrentStage();
         if(currentStage == null || currentStage.RequiredTableType != TableType) {
-            Debug.LogWarning($"This table cannot handle {foodObject.FoodName} at the current stage.");
+            GameNotificationManager.Instance.ShowNotification("Invalid cooking table for this food item.", 1f);
             return;
         }
 

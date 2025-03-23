@@ -4,22 +4,11 @@ using UnityEngine;
 namespace RestaurantManagement {
     public class Player : MonoBehaviour,IUpdateObserver {
         #region Properties
-        public decimal PersonalBalance = 1000m;
-        public decimal BusinessBalance = 5000m;
         public SkillTree PlayerSkillTree = new SkillTree();
         #endregion
 
         #region Methods
-        public void PurchaseFoodItem(FoodItemData item, int quantity) {
-            // Example purchasing calculation based on quality and quantity.
-            int cost = item.cost * quantity;
-            if(PersonalBalance >= cost) {
-                PersonalBalance -= cost;
-                Debug.Log($"Purchased {quantity} of {item.FoodName} for {cost} units.");
-            } else {
-                Debug.Log("Not enough funds to purchase food item.");
-            }
-        }
+
 
         public void HireEmployee(NPCSystem.EmployeeScript employee) {
             Debug.Log($"Hired employee: {employee.empData.npcName}");

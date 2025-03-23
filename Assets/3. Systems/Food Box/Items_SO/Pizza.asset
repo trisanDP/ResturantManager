@@ -13,19 +13,16 @@ MonoBehaviour:
   m_Name: Pizza
   m_EditorClassIdentifier: 
   FoodName: Pizza
+  FoodID: 02
+  RequiredLevel: 0
+  costPrice: 15
+  sellPrice: 25
+  unlockCost: 0
   CookingStages:
   - StageName: PrepTable
-    Duration: 3
     RequiredTableType: 0
-  - StageName: Stove
     Duration: 3
+  - StageName: Stove
     RequiredTableType: 1
-  - StageName: Stove
     Duration: 3
-    RequiredTableType: 2
-  - StageName: Stove
-    Duration: 3
-    RequiredTableType: 0
   CurrentQuality: 0
-  cost: 23
-  prefab: {fileID: 7212228772856472773, guid: 3f6df94efbab34c4791adfa5bb5db66f, type: 3}

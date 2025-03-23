@@ -12,8 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4814328d6e6a9a1429bc171a72dc5e9c, type: 3}
   m_Name: ItemDatabase
   m_EditorClassIdentifier: 
-  allItems: []
-  activeItems:
+  allItems:
+  - {fileID: 11400000, guid: b7962a9063a28d446ac92bd28057e7a4, type: 2}
+  - {fileID: 11400000, guid: 123627b61acf11241bf6b4d15b7e4fcd, type: 2}
+  - {fileID: 11400000, guid: 532d9eca5c853ad4b91af428b68d3b9e, type: 2}
+  defaultMenuItems:
   - {fileID: 11400000, guid: b7962a9063a28d446ac92bd28057e7a4, type: 2}
   - {fileID: 11400000, guid: 123627b61acf11241bf6b4d15b7e4fcd, type: 2}
   - {fileID: 11400000, guid: 532d9eca5c853ad4b91af428b68d3b9e, type: 2}

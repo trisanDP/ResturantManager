@@ -13,8 +13,11 @@ public class Oven : CookingTable, IUpdateObserver {
 
     #region Unity Methods
     private void OnEnable() {
-        UpdateManager.RegisterObserver(this);
+        if(DoorTransform != null) {
+            UpdateManager.RegisterObserver(this);
+        }
     }
+
     public void ObservedUpdate() {
         UpdateDoorRotation();
         UpdateLightState();
@@ -23,6 +26,10 @@ public class Oven : CookingTable, IUpdateObserver {
     private void OnDestroy() {
         UpdateManager.UnregisterObserver(this);
     }
+    private void OnDisable() {
+        UpdateManager.UnregisterObserver(this);
+    }
+
     #endregion
 
     #region Interaction Methods
@@ -74,9 +81,16 @@ public class Oven : CookingTable, IUpdateObserver {
     }
 
     private void UpdateDoorRotation() {
+        if(DoorTransform == null) return;
+
         float targetAngle = _isDoorOpen ? OpenAngle : ClosedAngle;
-        DoorTransform.localRotation = Quaternion.Lerp(DoorTransform.localRotation, Quaternion.Euler(0, targetAngle, 0), Time.deltaTime * DoorRotationSpeed);
+        DoorTransform.localRotation = Quaternion.Lerp(
+            DoorTransform.localRotation,
+            Quaternion.Euler(0, targetAngle, 0),
+            Time.deltaTime * DoorRotationSpeed
+        );
     }
+
 
     private void UpdateLightState() {
         if(OvenLight != null) {

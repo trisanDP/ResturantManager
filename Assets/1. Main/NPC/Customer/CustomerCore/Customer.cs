@@ -1,56 +1,74 @@
 using UnityEngine;
 using UnityEngine.AI;
 using TMPro;
+using System;
 
 namespace RestaurantManagement {
     public class Customer : MonoBehaviour, IInteractable, IMovable {
         #region Fields and Properties
         [Header("Settings")]
         public float eatingSpeed = 1f;
-        public float orderDelay = 1f;    // Delay to simulate ordering
-        public float paymentDelay = 1f;  // Delay to simulate payment
+        public float orderDelay = 1f;
+        public float paymentDelay = 1f;
         [SerializeField] private GameObject selectedIndicator;
         [SerializeField] private float navMeshStoppingDistance = 0.3f;
 
         [Header("Debug")]
         [SerializeField] private TextMeshProUGUI stateDebugText;
 
-        private FoodItemData orderedFood;
-        private Table assignedTable;
-        private FoodObject currentFood;
+        // Core Components
         private NavMeshAgent agent;
-
-        // Helper controllers for movement and state handling.
+        private Rigidbody rb;
         private CustomerMovementController movementController;
         private CustomerStateMachine stateMachine;
 
+        // Helpers
+        private CustomerOrderFoodHandler orderFoodHandler;
+        private CustomerSeatingHandler seatingHandler;
+
+        // Data
+        private FoodItemData orderedFood;
+        private FoodObject currentFood;
+        private FoodItemData servedFoodData;   // NEW: Stores food info after delivery for payment
+        private Order activeOrder;             // NEW: Stores the active order
+        private Table assignedTable;
         public Table AssignedTable => assignedTable;
         #endregion
 
-        #region Unity Methods
+        #region Unity Callbacks
         private void Awake() {
             agent = GetComponent<NavMeshAgent>();
+            rb = GetComponent<Rigidbody>();
+
             movementController = new CustomerMovementController(agent, navMeshStoppingDistance);
             stateMachine = new CustomerStateMachine();
-            // Initialize state machine with movement delegates.
             stateMachine.Initialize(this, movementController.HasReachedDestination, movementController.MoveTo);
+
+            orderFoodHandler = new CustomerOrderFoodHandler(this);
+            seatingHandler = new CustomerSeatingHandler(this);
+
+            RestaurantManager.Instance?.CustomerManager?.RegisterCustomer(this);
         }
 
         private void Start() {
-            if(RestaurantManager.Instance.WaitPoint != null) {
+            if(RestaurantManager.Instance?.WaitPoint != null)
                 movementController.MoveTo(RestaurantManager.Instance.WaitPoint.position);
-            } else {
-                Debug.LogError("RestaurantManager.WaitPoint not assigned!");
-            }
+            else
+                Debug.LogError("WaitPoint not assigned!");
+            CustomerUIManager.Instance?.UpdateCustomerUI(this);
         }
 
         private void Update() {
             stateMachine.Update(Time.deltaTime);
             UpdateDebugText();
         }
+
+        private void OnDestroy() {
+            RestaurantManager.Instance?.CustomerManager?.UnregisterCustomer(this);
+        }
         #endregion
 
-        #region IMovable Interface Implementation
+        #region Interface Implementations
         public void MoveTo(Vector3 position) {
             movementController.MoveTo(position);
         }
@@ -60,71 +78,96 @@ namespace RestaurantManagement {
         }
 
         public bool IsMoving => movementController.IsMoving;
+
+        public void OnFocusEnter() {
+            selectedIndicator?.SetActive(true);
+        }
+
+        public void OnFocusExit() {
+            selectedIndicator?.SetActive(false);
+        }
+
+        public void Interact(BoxController controller) {
+            // If carrying a box (e.g., cooked food), delegate to orderFoodHandler.
+            if(controller.HasCarriedBox())
+                orderFoodHandler.TryDeliverFood(controller);
+        }
         #endregion
 
-        #region Business Logic Methods (Called by State Machine)
-        public bool FindAndReserveTable() {
-            if(assignedTable == null) {
-                assignedTable = RestaurantManager.Instance.GetAvailableTable();
-                if(assignedTable != null && assignedTable.Reserve(this)) {
-                    return true;
-                }
-                assignedTable = null;
+        #region Seating & Table Handling
+        public Table FindAvailableTable() {
+            if(assignedTable == null && RestaurantManager.Instance?.TableManager != null) {
+                Table table = RestaurantManager.Instance.TableManager.GetAvailableTable();
+                if(table != null && seatingHandler.ReserveTable(table))
+                    return table;
             }
-            return false;
+            Debug.LogWarning("No available table found.");
+            return null;
         }
 
-        public bool TryPlaceOrder() {
-            if(orderedFood == null) {
-                orderedFood = ChooseDishFromMenu();
-                if(orderedFood != null) {
-                    assignedTable.TakeOrder(this, orderedFood);
-                    return true;
-                } else {
-                    Debug.LogWarning("No dish available in the menu.");
-                    return false;
-                }
-            }
-            return true;
+        public void SetAssignedTable(Table table) {
+            assignedTable = table;
         }
 
+        public bool IsTableAvailable() {
+            return RestaurantManager.Instance?.TableManager?.HasAvailableTable() ?? false;
+        }
+
+        public void AssignSeatAtTable() {
+            if(assignedTable != null) {
+                assignedTable.SeatCustomer(this);
+                FreezeMovementAndRotation();
+            } else {
+                Debug.LogWarning("No assigned table for seating.");
+            }
+        }
+
+        // Called by Table.SeatCustomer to update the customer's position.
         public void AssignSeat(Vector3 seatPosition, Quaternion seatRotation) {
-            StopMovement();
-            // Optionally disable the NavMeshAgent if no further movement is expected.
-            if(agent != null)
-                agent.enabled = false;
+            FreezeMovementAndRotation();
             transform.position = seatPosition;
             transform.rotation = seatRotation;
         }
+        #endregion
 
-
-        public void AssignSeatAtTable() {
-            assignedTable.SeatCustomer(this);
-            // Disable the agent to prevent further movement adjustments once seated.
-            if(agent != null)
-                agent.enabled = false;
+        #region Order & Food Handling
+        public void FinishEatingFood() {
+            if(currentFood != null) {
+                currentFood.FinishedEating(); // Should destroy the FoodObject
+                currentFood = null;
+            }
+            // When finished eating, complete the active order if it exists
+            if(activeOrder != null) {
+                RestaurantManager.Instance.OrderManager.CompleteOrder(activeOrder);
+                Debug.Log("Call 1");
+                activeOrder = null;
+            }
         }
 
+        public bool PlaceOrder() {
+            return orderFoodHandler.TryPlaceOrder();
+        }
+
+        public void NotifyFoodDelivered(FoodObject food) {
+            orderFoodHandler.NotifyFoodDelivered(food);
+        }
+        #endregion
+
+        #region Payment & Leaving
         public void ProcessPayment() {
-            float payment = currentFood.FoodItemData.cost * GetQualityMultiplier(currentFood.FoodItemData.CurrentQuality);
-            RestaurantManager.Instance.ProcessPayment(payment);
+            // Use servedFoodData (stored at delivery) for payment calculation
+            FoodItemData foodData = GetServedFoodData();
+            if(foodData != null) {
+                float payment = foodData.sellPrice * GetQualityMultiplier(foodData.CurrentQuality);
+                RestaurantManager.Instance?.FinanceManager?.AddBusinessIncome((decimal)payment, "Customer Payment");
+                SetServedFoodData(null);
+            } else {
+                Debug.LogWarning("No served food data available for payment.");
+            }
         }
 
         public void LeaveRestaurant() {
-            if(assignedTable != null) {
-                assignedTable.RemoveCustomer(this);
-            }
-            // Re-enable the agent so that the customer can navigate away.
-            if(!agent.enabled)
-                agent.enabled = true;
-
-            if(SpawnManager.Instance != null && SpawnManager.Instance.exitLocation != null) {
-                movementController.MoveTo(SpawnManager.Instance.exitLocation.position);
-            } else if(RestaurantManager.Instance.ExitPoint != null) {
-                movementController.MoveTo(RestaurantManager.Instance.ExitPoint.position);
-            } else {
-                Debug.LogError("No exit location defined!");
-            }
+            seatingHandler.LeaveRestaurant();
         }
 
         public void DestroySelf() {
@@ -132,72 +175,70 @@ namespace RestaurantManagement {
         }
         #endregion
 
-        #region Utility Methods
-        private bool IsValidFood(FoodObject food) {
-            return food != null &&
-                   food.CurrentCookingState == CookingState.Cooked &&
-                   food.FoodItemData == orderedFood;
+        #region Movement Helpers
+        public void FreezeMovementAndRotation() {
+            if(agent != null) agent.enabled = false;
+            if(rb != null) rb.constraints = RigidbodyConstraints.FreezeAll;
         }
 
-        private float CalculateEatingDuration() {
-            float qualityMultiplier = GetQualityMultiplier(currentFood.FoodItemData.CurrentQuality);
-            return 5f / (eatingSpeed * qualityMultiplier);
-        }
-
-        private float GetQualityMultiplier(FoodItemData.FoodQuality quality) {
-            return quality switch {
-                FoodItemData.FoodQuality.Low => 0.75f,
-                FoodItemData.FoodQuality.Mid => 1f,
-                FoodItemData.FoodQuality.High => 1.25f,
-                _ => 1f
-            };
-        }
-
-        private FoodItemData ChooseDishFromMenu() {
-            if(RestaurantManager.Instance.Menu.Count == 0) {
-                GameNotificationManager.Instance.ShowNotification("Menu is empty!", 5);
-                return null;
-            }
-            int randomIndex = Random.Range(0, RestaurantManager.Instance.Menu.Count);
-            return RestaurantManager.Instance.Menu[randomIndex];
-        }
-
-        private void UpdateDebugText() {
-            if(stateDebugText)
-                stateDebugText.text = stateMachine.CurrentState.ToString();
+        public void UnfreezeMovementAndRotation() {
+            if(rb != null) rb.constraints = RigidbodyConstraints.None;
         }
         #endregion
 
-        #region External Notifications and IInteractable Implementation
-        // Called externally (e.g., from the Table) when food is delivered.
-        public void NotifyFoodDelivered(FoodObject food) {
-            if(IsValidFood(food)) {
-                currentFood = food;
-                float eatDuration = CalculateEatingDuration();
-                stateMachine.StartEating(eatDuration);
+        #region Helper Accessors
+        public FoodItemData GetOrderedFood() {
+            return orderedFood;
+        }
+
+        public void SetOrderedFood(FoodItemData food) {
+            orderedFood = food;
+        }
+
+        public void SetCurrentFood(FoodObject food) {
+            currentFood = food;
+        }
+
+        public FoodObject GetCurrentFood() {
+            return currentFood;
+        }
+
+        // NEW: Served Food Data accessors (for payment after eating)
+        public void SetServedFoodData(FoodItemData data) {
+            servedFoodData = data;
+        }
+
+        public FoodItemData GetServedFoodData() {
+            return servedFoodData;
+        }
+
+        // NEW: Active Order Management
+        public void SetActiveOrder(Order order) {
+            activeOrder = order;
+        }
+
+        public Order GetActiveOrder() {
+            return activeOrder;
+        }
+
+        public void StartEating(float duration) {
+            stateMachine.StartEating(duration);
+        }
+
+        public float GetQualityMultiplier(FoodItemData.FoodQuality quality) {
+            switch(quality) {
+                case FoodItemData.FoodQuality.Low: return 0.75f;
+                case FoodItemData.FoodQuality.Mid: return 1f;
+                case FoodItemData.FoodQuality.High: return 1.25f;
+                default: return 1f;
             }
         }
+        #endregion
 
-        public void OnFocusEnter() {
-            selectedIndicator.SetActive(true);
-        }
-
-        public void OnFocusExit() {
-            selectedIndicator.SetActive(false);
-        }
-
-        public void Interact(BoxController controller) {
-            if(controller.HasCarriedBox()) {
-                TryDeliverFood(controller);
-            }
-        }
-
-        private void TryDeliverFood(BoxController controller) {
-            FoodObject food = controller.GetCarriedBox()?.GetComponent<FoodObject>();
-            if(IsValidFood(food)) {
-                controller.ClearCarriedBox();
-                NotifyFoodDelivered(food);
-            }
+        #region Utility Methods
+        private void UpdateDebugText() {
+            if(stateDebugText != null)
+                stateDebugText.text = stateMachine.CurrentState.ToString();
         }
         #endregion
     }

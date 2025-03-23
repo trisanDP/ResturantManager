@@ -1,13 +1,19 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Cooking/Food Item")]
+[CreateAssetMenu(fileName = "FoodItemData", menuName = "Restaurant/Food Item Data")]
 public class FoodItemData : ScriptableObject {
     [Header("Food Details")]
     public string FoodName;
+    public string FoodID;         // Unique identifier for this food item
+    public int RequiredLevel;
+
+    public int costPrice;
+    public int sellPrice;
+
+    public int unlockCost;        // Cost to unlock the item (if applicable)
+
     public CookingStage[] CookingStages;
     public FoodQuality CurrentQuality;
-    public int cost;
-/*    public GameObject prefab; // Associated prefab*/
 
     public CookingStage GetCurrentCookingStage(int stageIndex) {
         if(stageIndex >= 0 && stageIndex < CookingStages.Length) {
@@ -16,18 +22,26 @@ public class FoodItemData : ScriptableObject {
         return null;
     }
 
+    public void OnValidate() {
+        if(CookingStages != null && CookingStages.Length != 0) {
+            foreach(var stage in CookingStages) {
+                stage.StageName = stage.RequiredTableType.ToString();
+            }
+        }
+    }
+
     [System.Serializable]
     public class CookingStage {
         public string StageName;
-        public float Duration;
         public CookingTableType RequiredTableType;
+        public float Duration;
     }
-
 
     public enum FoodQuality {
         Low, Mid, High
     }
 }
+
 
 
 // Represents different cooking-related states

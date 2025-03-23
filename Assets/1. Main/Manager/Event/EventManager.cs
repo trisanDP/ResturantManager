@@ -4,11 +4,11 @@ using System.Linq;
 
 public static class EventManager {
 
-    #region Input-Related Custom Events
+    #region  Custom Events
     // Dictionary for input-related events
     private static readonly Dictionary<string, Action<bool>> inputEventDictionary = new Dictionary<string, Action<bool>>();
 
-    // Subscribe a listener to an input event
+
     public static void Subscribe(string eventName, Action<bool> listener) {
         if(!inputEventDictionary.ContainsKey(eventName))
             inputEventDictionary[eventName] = null;
@@ -37,21 +37,34 @@ public static class EventManager {
     }
     #endregion
 
-    #region Order-Related Events
-/*    public static event Action<TableOrder> OnOrderPlaced;
-    public static event Action<TableOrder> OnOrderCompleted;
-    public static event Action<TableOrder> OnBillRequested;
+    #region Generic Events
 
-    public static void OrderPlaced(TableOrder order) {
-        OnOrderPlaced?.Invoke(order);
-    }
+    #region Game State Events
+    public static event Action<bool> OnGameOver;
+    public static event Action<bool> OnGamePaused;
 
-    public static void OrderCompleted(TableOrder order) {
-        OnOrderCompleted?.Invoke(order);
-    }*/
+    public static void GameOver(bool isWin) => OnGameOver?.Invoke(isWin);
+    public static void GamePaused(bool isPaused) => OnGamePaused?.Invoke(isPaused);
 
-/*    public static void BillRequested(TableOrder order) {
-        OnBillRequested?.Invoke(order);
-    }*/
+    public static void TriggerGameOver(bool isWin) => OnGameOver?.Invoke(isWin);
+    public static void TriggerGamePaused(bool isPaused) => OnGamePaused?.Invoke(isPaused);
+    #endregion
+
+    #region Finance Events
+    public static event Action<int> OnMoneyEarned;
+    public static event Action<int> OnMoneySpent;
+
+    public static void MoneyEarned(int amount) => OnMoneyEarned?.Invoke(amount);
+    public static void MoneySpent(int amount) => OnMoneySpent?.Invoke(amount);
+    #endregion
+
+    #region Quest Events
+
+    public static event Action<string, int> OnQuestProgressUpdated;
+
+    public static void UpdateQuestProgress(string questId, int progress)
+        => OnQuestProgressUpdated?.Invoke(questId, progress);
+    #endregion
+
     #endregion
 }

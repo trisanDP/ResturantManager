@@ -57,11 +57,16 @@ namespace StarterAssets {
             _controller = GetComponent<CharacterController>();
             _input = GetComponent<StarterAssetsInputs>();
 
+            // Make sure the game is unpaused at scene start
+            Time.timeScale = 1f;
+
             _jumpTimeoutDelta = JumpTimeout;
             _fallTimeoutDelta = FallTimeout;
 
             EventManager.Subscribe("TabToggle", OnTabToggle);
         }
+
+
 
         private void OnDestroy() {
             EventManager.Unsubscribe("TabToggle", OnTabToggle);
@@ -76,7 +81,8 @@ namespace StarterAssets {
         }
 
         private void LateUpdate() {
-            if(!_input.tabMenuOpen) {
+            // Only update camera rotation if neither the tab nor the pause menu is open
+            if(!_input.tabMenuOpen && !_input.isPaused) {
                 CameraRotation();
             }
         }

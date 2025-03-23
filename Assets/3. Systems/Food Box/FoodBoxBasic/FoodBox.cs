@@ -1,35 +1,29 @@
-// FoodObject.cs
+using TMPro;
 using UnityEngine;
 using static FoodItemData;
 
 public class FoodObject : MonoBehaviour {
-
-    #region Fields and Properties
-
     [Header("Food Settings")]
-    public CookingState CurrentCookingState = CookingState.Raw; // Current cooking state
-    public FoodItemData FoodItemData; // Associated food item data
-    public string FoodName; // Name of the food
+    public CookingState CurrentCookingState = CookingState.Raw;
+    public FoodItemData FoodItemData;
+    public string FoodName;
+    public TextMeshProUGUI FoodNameTxt;
 
-    public float CookingProgress { get; private set; } = 0f; // Cooking progress percentage
-    public int CurrentStageIndex { get; private set; } = 0; // Current cooking stage index
+    public float CookingProgress { get; private set; } = 0f;
+    public int CurrentStageIndex { get; private set; } = 0;
 
-    public bool IsCooking => CurrentCookingState == CookingState.Cooking; // Check if the food is being cooked
+    public bool IsCooking => CurrentCookingState == CookingState.Cooking;
 
-    #endregion
-
-    #region UnityRuntime Methods
     private void Start() {
         if(FoodItemData != null) {
             FoodName = FoodItemData.FoodName;
-        }else
+            FoodNameTxt.text = FoodName;
+        } else {
             Debug.LogError("FoodItemData is null");
+        }
     }
-    #endregion
 
-    #region Cooking Methods
-
-    // Updates cooking progress and adjusts state accordingly
+    // Updates cooking progress and adjusts the state accordingly.
     public void UpdateCookingProgress(float increment) {
         CookingProgress += increment;
 
@@ -44,41 +38,35 @@ public class FoodObject : MonoBehaviour {
         }
     }
 
-    // Sets the cooking state of the food
+    // Sets the current cooking state.
     public void SetCookingState(CookingState state) {
         CurrentCookingState = state;
     }
 
-    // Gets the current cooking stage from the food item
+    // Returns the current cooking stage.
     public CookingStage GetCurrentStage() {
         return FoodItemData?.GetCurrentCookingStage(CurrentStageIndex);
     }
 
-    // Advances to the next cooking stage
+    // Advances to the next cooking stage.
     public void AdvanceStage() {
         CurrentStageIndex++;
     }
 
-    // Checks if the food is fully cooked
+    // Checks if the food is fully cooked.
     public bool IsFullyCooked() {
         return CurrentCookingState == CookingState.Cooked;
     }
 
-    #endregion
-
-    #region Unity Methods
-
-    // Ensures the food name matches the associated food item
+    // Ensure that the food name always matches the associated food item.
     private void OnValidate() {
         if(FoodItemData != null) {
             FoodName = FoodItemData.FoodName;
         }
     }
 
-    // Destroys the food object when finished
+    // Destroys the food object when finished.
     public void FinishedEating() {
         Destroy(gameObject);
     }
-
-    #endregion
 }

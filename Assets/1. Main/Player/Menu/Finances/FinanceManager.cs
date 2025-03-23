@@ -1,119 +1,125 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
-public class FinanceManager : MonoBehaviour {
-
-    #region Variables
+[Serializable]
+public class FinanceManager {
     #region Fields
-    [SerializeField] public decimal businessBalance = 5000m;
-
-    public string balance;
-    private List<Transaction> transactionHistory = new();
+    private decimal businessBalance = 0;
+    private decimal personalBalance = 0;
+    private List<Transaction> transactionHistory = new List<Transaction>();
     #endregion
 
     #region Events
-    // UnityEvents for balance changes
-/*    public UnityEvent OnPersonalBalanceChanged;*/
-    public UnityEvent OnBusinessBalanceChanged;
+    // Standard C# events
+    public event Action OnBusinessBalanceChanged = delegate { };
+    public event Action OnPersonalBalanceChanged = delegate { };
+    public event Action OnTransactionHistoryChanged = delegate { };
     #endregion
 
-    #region Enums
-    public enum TransactionType { Income, Expenditure, TransferToBusiness, WithdrawalFromBusiness }
+    #region Properties
+    public decimal BusinessBalance => businessBalance;
+    public decimal PersonalBalance => personalBalance;
+    public IReadOnlyList<Transaction> TransactionHistory => transactionHistory.AsReadOnly();
     #endregion
 
-    #endregion
-
-    #region Balance Management
-/*    public decimal GetPersonalBalance() => personalBalance;*/
-    public decimal GetBusinessBalance() => businessBalance;
-
-    public void Start() {
-        businessBalance = 0;
+    #region Business Transactions
+    public void AddBusinessIncome(decimal amount, string description = "Business Income") {
+        businessBalance += amount;
+        RecordTransaction(amount, TransactionType.BusinessIncome, description);
+        OnBusinessBalanceChanged?.Invoke();
+        // Fire finance event for quest tracking
+        EventManager.MoneyEarned((int)amount);
     }
 
-    public void Update() {
-        balance = businessBalance.ToString();
+    public bool DeductBusinessExpense(decimal amount, string description = "Business Expense") {
+        if(businessBalance >= amount) {
+            businessBalance -= amount;
+            RecordTransaction(amount, TransactionType.BusinessExpense, description);
+            OnBusinessBalanceChanged?.Invoke();
+            EventManager.MoneySpent((int)amount);
+            return true;
+        }
+        Debug.LogError("FinanceManager: Insufficient business funds.");
+        return false;
+    }
+    #endregion
+
+    #region Personal Transactions
+    public void AddPersonalIncome(decimal amount, string description = "Personal Income") {
+        personalBalance += amount;
+        RecordTransaction(amount, TransactionType.PersonalIncome, description);
+        OnPersonalBalanceChanged?.Invoke();
     }
 
-/*    public void DepositToBusiness(decimal amount) {
+    public bool DeductPersonalExpense(decimal amount, string description = "Personal Expense") {
         if(personalBalance >= amount) {
             personalBalance -= amount;
-            businessBalance += amount;
-
-            RecordTransaction(amount, TransactionType.TransferToBusiness);
-
-            // Trigger balance update events
-*//*            OnPersonalBalanceChanged?.Invoke();*//*
-            OnBusinessBalanceChanged?.Invoke();
-        } else {
-            Debug.LogError("Insufficient personal funds.");
+            RecordTransaction(amount, TransactionType.PersonalExpense, description);
+            OnPersonalBalanceChanged?.Invoke();
+            return true;
         }
+        Debug.LogError("FinanceManager: Insufficient personal funds.");
+        return false;
     }
+    #endregion
 
-    public void WithdrawFromBusiness(decimal amount) {
+    #region Transfers
+    public bool TransferToPersonal(decimal amount) {
         if(businessBalance >= amount) {
             businessBalance -= amount;
             personalBalance += amount;
-
-            RecordTransaction(amount, TransactionType.WithdrawalFromBusiness);
-
-            //OnPersonalBalanceChanged?.Invoke();
+            RecordTransaction(amount, TransactionType.TransferToPersonal, "Transfer to Personal");
             OnBusinessBalanceChanged?.Invoke();
-        } else {
-            Debug.LogError("Insufficient business funds.");
+            OnPersonalBalanceChanged?.Invoke();
+            return true;
         }
-    }*/
-    #endregion
-
-    public void GetLoan() {
-
+        Debug.LogError("FinanceManager: Insufficient business funds for transfer.");
+        return false;
     }
 
-
-    #region Income and Expenditure
-    public void AddIncome(decimal amount, string description = "Income") {
-        businessBalance += amount;
-        RecordTransaction(amount, TransactionType.Income, description);
-
-        EventManager.Trigger("OnBusinessBalanceChanged", true);
-    }
-
-    public void AddExpenditure(decimal amount, string description = "Expenditure") {
-        if(businessBalance >= amount) {
-            businessBalance -= amount;
-            RecordTransaction(amount, TransactionType.Expenditure, description);
-
-            EventManager.Trigger("OnBusinessBalanceChanged", true);
-        } else {
-            Debug.LogError("Insufficient business funds.");
+    public bool TransferToBusiness(decimal amount) {
+        if(personalBalance >= amount) {
+            personalBalance -= amount;
+            businessBalance += amount;
+            RecordTransaction(amount, TransactionType.TransferToBusiness, "Transfer to Business");
+            OnBusinessBalanceChanged?.Invoke();
+            OnPersonalBalanceChanged?.Invoke();
+            return true;
         }
+        Debug.LogError("FinanceManager: Insufficient personal funds for transfer.");
+        return false;
     }
     #endregion
 
-    #region Transaction History
-    private void RecordTransaction(decimal amount, TransactionType type, string description = "") {
+    #region Transaction Recording
+    private void RecordTransaction(decimal amount, TransactionType type, string description) {
         transactionHistory.Add(new Transaction {
             Amount = amount,
             Type = type,
             Description = description,
             Timestamp = DateTime.Now
         });
-
-        EventManager.Trigger("OnTransactionHistoryChanged", true);
+        OnTransactionHistoryChanged?.Invoke();
     }
-
-    public List<Transaction> GetTransactionHistory() => transactionHistory;
     #endregion
 
-    #region Nested Classes
+    #region Data Types
     [Serializable]
     public class Transaction {
         public decimal Amount;
         public TransactionType Type;
         public string Description;
         public DateTime Timestamp;
+    }
+
+    public enum TransactionType {
+        BusinessIncome,
+        BusinessExpense,
+        PersonalIncome,
+        PersonalExpense,
+        TransferToPersonal,
+        TransferToBusiness
     }
     #endregion
 }

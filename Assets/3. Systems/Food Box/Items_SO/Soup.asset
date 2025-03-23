@@ -13,13 +13,16 @@ MonoBehaviour:
   m_Name: Soup
   m_EditorClassIdentifier: 
   FoodName: Soup
+  FoodID: 03
+  RequiredLevel: 0
+  costPrice: 10
+  sellPrice: 20
+  unlockCost: 0
   CookingStages:
-  - StageName: 
-    Duration: 3
-    RequiredTableType: 1
-  - StageName: 
-    Duration: 2
+  - StageName: Oven
     RequiredTableType: 2
+    Duration: 2
+  - StageName: PrepTable
+    RequiredTableType: 0
+    Duration: 2
   CurrentQuality: 0
-  cost: 15
-  prefab: {fileID: 7212228772856472773, guid: 3f6df94efbab34c4791adfa5bb5db66f, type: 3}

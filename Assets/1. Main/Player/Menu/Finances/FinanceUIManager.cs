@@ -1,45 +1,59 @@
+using RestaurantManagement;
 using TMPro;
 using UnityEngine;
 
 public class FinanceUIManager : MonoBehaviour {
+    private FinanceManager financeManager;
 
-    [SerializeField] private FinanceManager financeManager;
-
+    // Panels for the Finance App
     public GameObject TransactionHistoryGroup;
     public GameObject BusinessBalanceGroup;
-
     public TextMeshProUGUI balanceUItxt;
 
-
     private void Awake() {
-        financeManager = GameManager.Instance.FinanceManager;
+        // Initialize financeManager in Awake so it's available in OnEnable.
+        if(RestaurantManager.Instance == null) {
+            Debug.LogError("RestaurantManager instance not found!");
+        } else {
+            financeManager = RestaurantManager.Instance.FinanceManager;
+            if(financeManager == null)
+                Debug.LogError("Finance Manager not found!");
+        }
     }
 
     private void OnEnable() {
-        // Subscribe to input events
+        Debug.Log("Heeeeee");
+        // Subscribe to input events.
         EventManager.Subscribe("OnTabPressed", ToggleTabUI);
+        // Subscribe to finance events if financeManager is valid.
+        if(financeManager != null)
+            financeManager.OnBusinessBalanceChanged += UpdateBusinessBalanceUI;
 
-        // Subscribe to finance events
-        //financeManager.OnPersonalBalanceChanged.AddListener(UpdatePersonalBalanceUI);
-        financeManager.OnBusinessBalanceChanged.AddListener(UpdateBusinessBalanceUI);
+        else
+            Debug.LogError("Finance Manager not found in OnEnable!");
     }
 
     private void OnDisable() {
-        // Unsubscribe from input events
+        // Unsubscribe from input events.
+        Debug.Log("Hello");
         EventManager.Unsubscribe("OnTabPressed", ToggleTabUI);
-
-        // Unsubscribe from finance events
-        //financeManager.OnPersonalBalanceChanged.RemoveListener(UpdatePersonalBalanceUI);
-        financeManager.OnBusinessBalanceChanged.RemoveListener(UpdateBusinessBalanceUI);
+        if(financeManager != null)
+            financeManager.OnBusinessBalanceChanged -= UpdateBusinessBalanceUI;
     }
 
     private void ToggleTabUI(bool isPressed) {
-        // Toggle Tab UI
+        // Toggle Finance app panels.
+        TransactionHistoryGroup.SetActive(isPressed);
+        BusinessBalanceGroup.SetActive(isPressed);
     }
 
     private void UpdateBusinessBalanceUI() {
-        // Update business balance UI
-        decimal amount = financeManager.GetBusinessBalance();
-        balanceUItxt.text = "" + amount;
+        Debug.Log("Call");
+        if(financeManager != null) {
+            decimal amount = financeManager.BusinessBalance;
+
+            balanceUItxt.text = amount.ToString("C");
+        } else
+            Debug.Log("Empty");
     }
 }

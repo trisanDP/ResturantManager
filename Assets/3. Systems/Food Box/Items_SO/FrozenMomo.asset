@@ -13,10 +13,16 @@ MonoBehaviour:
   m_Name: FrozenMomo
   m_EditorClassIdentifier: 
   FoodName: FrozenMomo
+  FoodID: 01
+  RequiredLevel: 0
+  costPrice: 10
+  sellPrice: 15
+  unlockCost: 0
   CookingStages:
-  - StageName: Oven
+  - StageName: Stove
+    RequiredTableType: 1
     Duration: 3
+  - StageName: Oven
     RequiredTableType: 2
-  CurrentQuality: 0
-  cost: 20
-  prefab: {fileID: 7212228772856472773, guid: 3f6df94efbab34c4791adfa5bb5db66f, type: 3}
+    Duration: 3
+  CurrentQuality: 1

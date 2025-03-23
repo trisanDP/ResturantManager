@@ -14,19 +14,21 @@ namespace RestaurantManagement {
             Leaving
         }
         public State CurrentState { get; private set; }
-
-        private float stateTimer;
+        internal float stateTimer;
         private Customer owner;
         private Func<bool> hasReachedDestination;
         private Action<Vector3> moveTo;
 
+        #region Initialization
         public void Initialize(Customer owner, Func<bool> hasReachedDestination, Action<Vector3> moveTo) {
             this.owner = owner;
             this.hasReachedDestination = hasReachedDestination;
             this.moveTo = moveTo;
             CurrentState = State.MovingToWaitingPoint;
         }
+        #endregion
 
+        #region Update Loop
         public void Update(float deltaTime) {
             switch(CurrentState) {
                 case State.MovingToWaitingPoint:
@@ -35,16 +37,19 @@ namespace RestaurantManagement {
                 break;
 
                 case State.WaitingForTable:
-                if(owner.FindAndReserveTable()) {
-                    moveTo(owner.AssignedTable.GetReservedChairPosition(owner));
-                    CurrentState = State.MovingToTable;
+                if(owner.IsTableAvailable()) {
+                    Table table = owner.FindAvailableTable();
+                    if(table != null) {
+                        moveTo(table.GetReservedSeatPosition(owner));
+                        CurrentState = State.MovingToTable;
+                    }
                 }
                 break;
 
                 case State.MovingToTable:
                 if(hasReachedDestination()) {
                     owner.AssignSeatAtTable();
-                    stateTimer = owner.orderDelay; // Start the ordering delay.
+                    stateTimer = owner.orderDelay;
                     CurrentState = State.Ordering;
                 }
                 break;
@@ -52,7 +57,7 @@ namespace RestaurantManagement {
                 case State.Ordering:
                 stateTimer -= deltaTime;
                 if(stateTimer <= 0f) {
-                    if(owner.TryPlaceOrder())
+                    if(owner.PlaceOrder())
                         CurrentState = State.WaitingForFood;
                     else {
                         owner.LeaveRestaurant();
@@ -62,16 +67,19 @@ namespace RestaurantManagement {
                 break;
 
                 case State.WaitingForFood:
-                // Waiting for external notification (NotifyFoodDelivered).
+                // External event (NotifyFoodDelivered) should trigger StartEating.
                 break;
 
                 case State.Eating:
                 stateTimer -= deltaTime;
                 if(stateTimer <= 0f) {
+                    // Tell the customer to finish eating the food (destroy it)
+                    owner.FinishEatingFood();
                     stateTimer = owner.paymentDelay;
                     CurrentState = State.Paying;
                 }
                 break;
+
 
                 case State.Paying:
                 stateTimer -= deltaTime;
@@ -83,16 +91,18 @@ namespace RestaurantManagement {
                 break;
 
                 case State.Leaving:
-                if(hasReachedDestination()) {
+                if(hasReachedDestination())
                     owner.DestroySelf();
-                }
                 break;
             }
         }
+        #endregion
 
+        #region State Transitions
         public void StartEating(float duration) {
             stateTimer = duration;
             CurrentState = State.Eating;
         }
+        #endregion
     }
 }

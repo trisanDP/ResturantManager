@@ -36,7 +36,7 @@ public class SpawnManager : MonoBehaviour, IInteractable {
     }
 
     private float CalculateWaitTime() {
-        if(RestaurantManagement.RestaurantManager.Instance != null && RestaurantManagement.RestaurantManager.Instance.UseSpawnLogic) {
+        if(RestaurantManagement.RestaurantManager.Instance != null && RestaurantManagement.RestaurantManager.Instance.UseSpawnLogic) {  
             float popularityFactor = RestaurantManagement.RestaurantManager.Instance.Popularity;
             float marketingFactor = RestaurantManagement.RestaurantManager.Instance.MarketingLevel;
             float adjustedRate = baseSpawnRate / Mathf.Max(1f, (popularityFactor + marketingFactor) * 0.1f);
@@ -51,7 +51,6 @@ public class SpawnManager : MonoBehaviour, IInteractable {
             return;
         }
         Instantiate(customerPrefab, spawnLocation.position, spawnLocation.rotation);
-        Debug.Log("Customer spawned successfully.");
     }
 
     #region IInteractable Implementation
