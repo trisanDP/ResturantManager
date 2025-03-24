@@ -17,6 +17,7 @@ namespace RestaurantManagement {
         [SerializeField] private TextMeshProUGUI stateDebugText;
 
         // Core Components
+        public Animator animator;
         private NavMeshAgent agent;
         private Rigidbody rb;
         private CustomerMovementController movementController;
@@ -39,6 +40,7 @@ namespace RestaurantManagement {
         private void Awake() {
             agent = GetComponent<NavMeshAgent>();
             rb = GetComponent<Rigidbody>();
+            animator = GetComponent<Animator>();
 
             movementController = new CustomerMovementController(agent, navMeshStoppingDistance);
             stateMachine = new CustomerStateMachine();
@@ -61,6 +63,11 @@ namespace RestaurantManagement {
         private void Update() {
             stateMachine.Update(Time.deltaTime);
             UpdateDebugText();
+
+            if(animator != null) {
+                bool isWalking = agent.velocity.sqrMagnitude > 0.1f;
+                animator.SetBool("IsWalking", isWalking);
+            }
         }
 
         private void OnDestroy() {
@@ -123,10 +130,11 @@ namespace RestaurantManagement {
         }
 
         // Called by Table.SeatCustomer to update the customer's position.
-        public void AssignSeat(Vector3 seatPosition, Quaternion seatRotation) {
+        public void AssignSeat(Vector3 seatPosition/*, Quaternion seatRotation*/) {
             FreezeMovementAndRotation();
             transform.position = seatPosition;
-            transform.rotation = seatRotation;
+            transform.rotation = Quaternion.Euler(0, 260, 0);
+
         }
         #endregion
 

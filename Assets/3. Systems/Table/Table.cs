@@ -65,7 +65,8 @@ namespace RestaurantManagement {
                     Quaternion.LookRotation(lookDir) : reservedSeat.seatPosition.rotation;
 
                 // Directly assign seat via the customer's method.
-                customer.AssignSeat(seatPos, desiredRotation);
+
+                customer.AssignSeat(seatPos);
 
                 OnSeatStatusChanged?.Invoke(this);
             }

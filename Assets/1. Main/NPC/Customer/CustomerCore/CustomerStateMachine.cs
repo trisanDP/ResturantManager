@@ -55,6 +55,9 @@ namespace RestaurantManagement {
                 break;
 
                 case State.Ordering:
+                // Optionally, trigger the talk animation at the start of ordering.
+                if(owner.animator != null)
+                    owner.animator.SetBool("IsTalking", true);
                 stateTimer -= deltaTime;
                 if(stateTimer <= 0f) {
                     if(owner.PlaceOrder())
@@ -63,8 +66,12 @@ namespace RestaurantManagement {
                         owner.LeaveRestaurant();
                         CurrentState = State.Leaving;
                     }
+                    // Reset talk parameter once done ordering
+                    if(owner.animator != null)
+                        owner.animator.SetBool("IsTalking", false);
                 }
                 break;
+
 
                 case State.WaitingForFood:
                 // External event (NotifyFoodDelivered) should trigger StartEating.
