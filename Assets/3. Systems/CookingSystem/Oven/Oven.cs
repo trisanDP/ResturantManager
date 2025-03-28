@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class Oven : CookingTable, IUpdateObserver {
+public class Oven : CookingStation, IUpdateObserver {
     [Header("Oven Settings")]
     public Transform DoorTransform;
     public Light OvenLight;

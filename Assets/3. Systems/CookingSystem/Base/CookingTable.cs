@@ -1,41 +1,42 @@
-// CookingTable.cs
+// CookingStation.cs
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class CookingTable : MonoBehaviour, IInteractable {
-    #region Fields and Properties
-
+#region CookingStation Class
+public abstract class CookingStation : MonoBehaviour, IInteractable {
+    #region Fields & Properties
     [Header("Cooking Table Settings")]
     public Transform[] CookingSpots;
-    public CookingTableType TableType;
+    public CookingStationType TableType;  // This station's type (e.g., Oven, PrepTable, Stove)
     public int Force;
 
     private readonly List<CookingSlot> _cookingSlots = new();
     private readonly Dictionary<FoodObject, Coroutine> _activeCookingCoroutines = new();
     protected bool _isCooking;
-
     #endregion
 
     #region Unity Methods
-
     private void Awake() {
+        // Create a cooking slot for each cooking spot.
         foreach(var spot in CookingSpots) {
             var slot = new CookingSlot(spot);
             _cookingSlots.Add(slot);
         }
     }
 
+    private void Start() {
+        CookingStationManager.Instance.Register(this);
+    }
     #endregion
 
     #region Interaction Methods
-
     public virtual void OnFocusEnter() {
-        /*Debug.Log($"Focusing on {name}");*/
+        // Optionally highlight this station.
     }
 
     public virtual void OnFocusExit() {
-        //Debug.Log($"Stopped focusing on {name}");
+        // Optionally remove highlight.
     }
 
     public void Interact(BoxController controller) {
@@ -45,15 +46,12 @@ public abstract class CookingTable : MonoBehaviour, IInteractable {
         if(foodObject != null && carriedBox.CurrentInteractionState == InteractionState.Carried) {
             TryStartCooking(foodObject, controller);
         } else {
-/*            GameUIMessage.Instance.DisplayMessage("Not Carrying", 2);*/
             Debug.Log("No food box is being carried or invalid state.");
         }
     }
-
     #endregion
 
     #region Cooking Management
-
     protected virtual void TryStartCooking(FoodObject foodObject, BoxController controller) {
         if(foodObject == null || foodObject.FoodItemData == null) {
             Debug.LogWarning("Invalid food box or food item!");
@@ -61,6 +59,7 @@ public abstract class CookingTable : MonoBehaviour, IInteractable {
         }
 
         var currentStage = foodObject.GetCurrentStage();
+        // Check if the food's current cooking stage is compatible with this station.
         if(currentStage == null || currentStage.RequiredTableType != TableType) {
             GameNotificationManager.Instance.ShowNotification("Invalid cooking table for this food item.", 1f);
             return;
@@ -129,12 +128,22 @@ public abstract class CookingTable : MonoBehaviour, IInteractable {
 
         slot.Clear();
     }
+    #endregion
 
+    #region Suitability Check
+    // Check if this station is suitable for the given food item based on its current cooking stage.
+    public bool IsSuitableFor(FoodItemData data) {
+        if(data == null || data.CookingStages == null || data.CookingStages.Length == 0)
+            return false;
+        // Here we assume stage 0 is the current stage; adjust if you maintain a dynamic stage index.
+        var stage = data.CookingStages[0];
+        return stage.RequiredTableType == TableType;
+    }
     #endregion
 }
+#endregion
 
-#region CookingSlot
-
+#region CookingSlot Class
 public class CookingSlot {
     public Transform Spot { get; }
     public FoodObject FoodBox { get; private set; }
@@ -158,15 +167,13 @@ public class CookingSlot {
     }
 
     public void UpdateTime(float deltaTime) {
-        if(RemainingTime > 0) {
+        if(RemainingTime > 0)
             RemainingTime -= deltaTime;
-        }
     }
 }
-
 #endregion
 
-public enum CookingTableType {
+public enum CookingStationType {
     PrepTable,
     Stove,
     Oven

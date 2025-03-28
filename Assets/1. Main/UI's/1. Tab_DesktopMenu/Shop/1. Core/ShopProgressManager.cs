@@ -11,7 +11,6 @@ namespace RestaurantManagement {
         private void Awake() {
             if(Instance == null) {
                 Instance = this;
-                DontDestroyOnLoad(gameObject);
                 LoadProgress();
             } else {
                 Destroy(gameObject);

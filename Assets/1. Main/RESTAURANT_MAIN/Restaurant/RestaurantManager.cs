@@ -1,6 +1,7 @@
 using UnityEngine;
 
 namespace RestaurantManagement {
+
     public class RestaurantManager : MonoBehaviour {
         public static RestaurantManager Instance { get; private set; }
 
@@ -33,6 +34,7 @@ namespace RestaurantManagement {
         #region Database
         [Header("Database")]
         public ItemDatabase itemDatabase; // Reference to the ItemDatabase asset
+
         #endregion
 
         #region Unity Methods
@@ -43,6 +45,8 @@ namespace RestaurantManagement {
             } else {
                 Destroy(gameObject);
             }
+/*            Debug.Log(this.GetHashCode());
+            Debug.Log(OrderManager.GetHashCode());*/
         }
         #endregion
 

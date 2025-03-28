@@ -33,7 +33,7 @@ public class FoodItemData : ScriptableObject {
     [System.Serializable]
     public class CookingStage {
         public string StageName;
-        public CookingTableType RequiredTableType;
+        public CookingStationType RequiredTableType;
         public float Duration;
     }
 

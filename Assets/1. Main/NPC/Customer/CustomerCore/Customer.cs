@@ -73,6 +73,12 @@ namespace RestaurantManagement {
         private void OnDestroy() {
             RestaurantManager.Instance?.CustomerManager?.UnregisterCustomer(this);
         }
+
+        public void OnAnimatorMove() {
+            if(animator != null && animator.GetBool("IsWalking")) {
+                agent.speed = (animator.deltaPosition / Time.deltaTime).magnitude;
+            }
+        }
         #endregion
 
         #region Interface Implementations

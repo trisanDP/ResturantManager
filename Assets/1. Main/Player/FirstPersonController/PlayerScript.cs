@@ -4,15 +4,9 @@ using UnityEngine;
 namespace RestaurantManagement {
     public class Player : MonoBehaviour,IUpdateObserver {
         #region Properties
-        public SkillTree PlayerSkillTree = new SkillTree();
         #endregion
 
         #region Methods
-
-
-        public void HireEmployee(NPCSystem.EmployeeScript employee) {
-            Debug.Log($"Hired employee: {employee.empData.npcName}");
-        }
         #endregion
 
         #region Inputs 
@@ -41,31 +35,6 @@ namespace RestaurantManagement {
         #endregion
     }
 
-
-    public class SkillTree {
-        #region Fields
-        public Dictionary<string, int> Skills = new Dictionary<string, int>();
-        #endregion
-
-        #region Constructor
-        public SkillTree() {
-            // Initialize default skills
-            Skills["Motivation"] = 1;
-            Skills["CustomerPrediction"] = 1;
-        }
-        #endregion
-
-        #region Methods
-        public void UpgradeSkill(string skillName) {
-            if(Skills.ContainsKey(skillName)) {
-                Skills[skillName]++;
-                Debug.Log($"{skillName} upgraded to level {Skills[skillName]}.");
-            } else {
-                Debug.LogWarning($"Skill {skillName} does not exist.");
-            }
-        }
-        #endregion
-    }
     public class RuleBook {
         #region Fields
         // Example: Rules and their descriptions/effects.

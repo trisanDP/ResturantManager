@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class PrepTable : CookingTable {
+public class PrepTable : CookingStation {
 /*
     protected override IEnumerator ProcessFood(CookingSlot slot) {
         if(slot.FoodBox == null) {

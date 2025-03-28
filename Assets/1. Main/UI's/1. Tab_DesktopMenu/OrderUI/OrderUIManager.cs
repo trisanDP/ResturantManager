@@ -21,24 +21,43 @@ public class OrdersUIManager : MonoBehaviour {
         else
             Destroy(gameObject);
     }
+
+    // Example: Call UI update on Start and whenever orders change.
+    private void Start() {
+        // Initial UI update
+        UpdateOrdersUI();
+        // Subscribe to order updates
+        RestaurantManager.Instance.OrderManager.OnOrdersUpdated += UpdateOrdersUI;
+    }
+    private void OnDestroy() {
+        // Unsubscribe to prevent memory leaks
+        if(RestaurantManager.Instance != null) {
+            RestaurantManager.Instance.OrderManager.OnOrdersUpdated -= UpdateOrdersUI;
+        }
+    }
     #endregion
 
     #region UI Update Methods
     public void UpdateOrdersUI() {
+        Debug.Log("Hello");
         ClearOrderList(pendingOrderListParent);
         ClearOrderList(completedOrderListParent);
 
         // Fetch orders from OrderManager
         pendingOrders = RestaurantManager.Instance.OrderManager.GetPendingOrders();
-        completedOrders = RestaurantManager.Instance.OrderManager.GetCompletedOrders();
 
+        completedOrders = RestaurantManager.Instance.OrderManager.GetCompletedOrders();
+        
+        if(pendingOrders.Count > 0) {
+            Debug.Log($"Orders found! Count: {pendingOrders.Count}");
+        }
         // Display pending orders
         foreach(Order order in pendingOrders) {
             GameObject orderItem = Instantiate(orderItemPrefab, pendingOrderListParent);
             TextMeshProUGUI textComp = orderItem.GetComponentInChildren<TextMeshProUGUI>();
             textComp.text = order.Customer != null
-                ? $"{order.FoodItemData.name} to {order.Customer.name} in {order.Table.name}"
-                : $"{order.FoodItemData.name} (Customer Left! Order Complete)";
+                ? $"{order.FoodItemData.FoodName} to {order.Customer.name} in {order.Table.name}"
+                : $"{order.FoodItemData.FoodName} (Customer Left! Order Complete)";
         }
 
         // Display completed orders
@@ -46,8 +65,8 @@ public class OrdersUIManager : MonoBehaviour {
             GameObject orderItem = Instantiate(orderItemPrefab, completedOrderListParent);
             TextMeshProUGUI textComp = orderItem.GetComponentInChildren<TextMeshProUGUI>();
             textComp.text = order.Customer != null
-                ? $" {order.FoodItemData.name} (Served to {order.Customer.name})"
-                : $" {order.FoodItemData.name} (Order Completed)";
+                ? $"{order.FoodItemData.FoodName} (Served to {order.Customer.name})"
+                : $"{order.FoodItemData.FoodName} (Order Completed)";
         }
     }
 

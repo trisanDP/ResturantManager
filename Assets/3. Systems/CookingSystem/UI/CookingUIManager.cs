@@ -44,7 +44,7 @@ public class CookingUIManager : MonoBehaviour {
         var timeRemainingText = uiElement.transform.Find("TimeRemaining").GetComponent<TMPro.TextMeshProUGUI>();
 
         foodNameText.text = process.FoodBox.FoodName;
-        tableNameText.text = process.CookingTable.name;
+        tableNameText.text = process.CookingStation.name;
         timeRemainingText.text = $"{process.TimeRemaining:F1} seconds";
     }*/
 }

@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class Stove : CookingTable {
+public class Stove : CookingStation {
 /*    protected override IEnumerator ProcessFood(CookingSlot slot) {
         if(slot.FoodBox == null)
             yield break;

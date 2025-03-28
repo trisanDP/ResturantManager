@@ -14,5 +14,6 @@ AssetOrigin:
   productId: 239419
   packageName: Fast Food Restaurant Kit
   packageVersion: 1.2
-  assetPath: Assets/Brick Project Studio/_BPS Basic Assets/Common/Scripts and Animations/Windows/opencloseWindow.cs
+  assetPath: Assets/WareHouse/Assets/Brick Project Studio/_BPS Basic Assets/Common/Scripts
+    and Animations/Windows/opencloseWindow.cs
   uploadId: 566212

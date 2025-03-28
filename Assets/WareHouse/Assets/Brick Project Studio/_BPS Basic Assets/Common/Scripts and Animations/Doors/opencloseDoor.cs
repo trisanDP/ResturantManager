@@ -5,19 +5,18 @@ using UnityEngine;
 namespace SojaExiles
 
 {
-	public class opencloseDoor : MonoBehaviour
+	public class opencloseDoor : MonoBehaviour,IInteractable
 	{
 
 		public Animator openandclose;
 		public bool open;
-		public Transform Player;
 
 		void Start()
 		{
 			open = false;
 		}
 
-		void OnMouseOver()
+/*		void OnMouseOver()
 		{
 			{
 				if (Player)
@@ -49,11 +48,10 @@ namespace SojaExiles
 
 			}
 
-		}
+		}*/
 
 		IEnumerator opening()
 		{
-			print("you are opening the door");
 			openandclose.Play("Opening");
 			open = true;
 			yield return new WaitForSeconds(.5f);
@@ -67,6 +65,22 @@ namespace SojaExiles
 			yield return new WaitForSeconds(.5f);
 		}
 
+        public void OnFocusEnter() {
+            
 
-	}
+        }
+
+        public void OnFocusExit() {
+
+        }
+
+        public void Interact(BoxController controller) {
+            if(open == false) {
+                    StartCoroutine(opening());
+
+            } else
+				StartCoroutine(closing());
+                
+        }
+    }
 }
