@@ -1,8 +1,9 @@
 using RestaurantManagement;
-using StarterAssets;
+using Game_StarterAssets;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 #region DesktopUIManager Class
@@ -38,17 +39,23 @@ public class DesktopUIManager : MonoBehaviour {
     public OrdersUIManager ordersUIManager;
     public QuestUIManager questUIManager;
 
-    StarterAssetsInputs inputAsset;
+    InputActionAsset inputAsset;
     #endregion
 
     #region Unity Methods
     private void Awake() {
-        if(Instance == null)
+        if (Instance == null)
             Instance = this;
         else
             Destroy(gameObject);
         Initialize();
-        inputAsset = FindFirstObjectByType<StarterAssetsInputs>();
+
+        // Correctly assign StarterAssetsInputs instead of InputActionAsset
+        StarterAssetsInputs starterInputs = FindFirstObjectByType<StarterAssetsInputs>();
+        if (starterInputs != null)
+            inputAsset = starterInputs.GetComponent<InputActionAsset>();
+        else
+            Debug.LogWarning("StarterAssetsInputs not found!");
     }
 
     private void Update() {
@@ -153,11 +160,11 @@ public class DesktopUIManager : MonoBehaviour {
 
     public void BTN_CloseDesktop() {
         // This assumes you have access to the input system; if not, you can also trigger the event.
-        if( inputAsset != null) {
+/*        if( inputAsset != null) {
             inputAsset.CloseDesktop();
         } else {
             EventManager.Trigger("TabToggle", false);
-        }
+        }*/
     }
 
     public void BTN_OpenTasksPanel() {

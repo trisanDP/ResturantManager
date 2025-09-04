@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace StarterAssets {
+namespace Game_StarterAssets {
+
     public class StarterAssetsInputs : MonoBehaviour {
         #region Variables
         [Header("Character Input Values")]

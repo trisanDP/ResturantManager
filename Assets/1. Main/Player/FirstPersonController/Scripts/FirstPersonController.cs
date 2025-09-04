@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace StarterAssets {
+namespace Game_StarterAssets {
     [RequireComponent(typeof(CharacterController))]
     public class FirstPersonController : MonoBehaviour {
         #region Variables

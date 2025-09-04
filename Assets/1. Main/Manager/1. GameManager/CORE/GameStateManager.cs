@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using StarterAssets;
+using Game_StarterAssets;
 using System;
+using UnityEngine.InputSystem;
 
 public enum GameState {
     MainMenu,
@@ -17,7 +18,7 @@ public class GameStateManager : MonoBehaviour {
     // Broadcast game state changes for scene-specific UI to subscribe to.
     public event Action<GameState> OnStateChanged;
 
-    private StarterAssetsInputs inputAssets;
+    private StarterAssetsInputs starterAssetsInputs;
 
     private void Awake() {
         if(Instance == null) {
@@ -29,7 +30,7 @@ public class GameStateManager : MonoBehaviour {
         }
         // Subscribe to sceneLoaded event to update references when a new scene loads.
         SceneManager.sceneLoaded += OnSceneLoaded;
-        inputAssets = FindFirstObjectByType<StarterAssetsInputs>();
+        starterAssetsInputs = FindFirstObjectByType<StarterAssetsInputs>();
     }
 
     private void OnDestroy() {
@@ -39,7 +40,7 @@ public class GameStateManager : MonoBehaviour {
     // Called each time a new scene is loaded.
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
         Debug.Log("Called");
-        inputAssets = FindFirstObjectByType<StarterAssetsInputs>();
+        starterAssetsInputs = FindFirstObjectByType<StarterAssetsInputs>();
         // Optionally reapply the current state to update the new input reference.
         CheckScene();
     }
@@ -72,11 +73,11 @@ public class GameStateManager : MonoBehaviour {
             break;
             case GameState.Playing:
             Time.timeScale = 1f;
-            inputAssets?.SetPauseState(false);
+            starterAssetsInputs?.SetPauseState(false);
             break;
             case GameState.Paused:
             Time.timeScale = 0f;
-            inputAssets?.SetPauseState(true);
+            starterAssetsInputs?.SetPauseState(true);
             break;
             case GameState.GameOver:
             Time.timeScale = 0f;
