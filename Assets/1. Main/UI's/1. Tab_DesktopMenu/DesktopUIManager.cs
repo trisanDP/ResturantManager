@@ -52,10 +52,10 @@ public class DesktopUIManager : MonoBehaviour {
 
         // Correctly assign StarterAssetsInputs instead of InputActionAsset
         StarterAssetsInputs starterInputs = FindFirstObjectByType<StarterAssetsInputs>();
-        if (starterInputs != null)
+/*        if (starterInputs != null)
             inputAsset = starterInputs.GetComponent<InputActionAsset>();
         else
-            Debug.LogWarning("StarterAssetsInputs not found!");
+            Debug.LogWarning("StarterAssetsInputs not found!");*/
     }
 
     private void Update() {

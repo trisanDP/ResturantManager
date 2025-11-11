@@ -5,7 +5,7 @@ using UnityEngine.AI;
 public class EmployeeManager : MonoBehaviour {
     #region Fields & Properties
     [Header("Employee Prefab & Spawn Settings")]
-    public GameObject employeePrefab; // Prefab must include Employee, EmployeeStateManager, EmployeeMovement, Animator, etc.
+    public GameObject employeePrefab;
     public Transform spawnPoint;
 
     [Header("Special Employees (ScriptableObjects)")]
@@ -17,13 +17,12 @@ public class EmployeeManager : MonoBehaviour {
 
     #region Unity Methods
     private void Start() {
-        // Spawn special employees from ScriptableObjects.
         foreach(EmployeeDataSO data in specialEmployeeData) {
             Employee newEmp = SpawnEmployeeFromData(data);
             employeeList.Add(newEmp);
         }
 
-        // Optionally generate 5 random employees.
+        // Optionally generate 5 random employees. //Test
 /*        for(int i = 0; i < 5; i++) {
             Employee randomEmp = SpawnRandomEmployee();
             employeeList.Add(randomEmp);
@@ -56,7 +55,7 @@ public class EmployeeManager : MonoBehaviour {
         return emp;
     }
 
-    // Spawn a random employee.
+/* Testing
     public Employee SpawnRandomEmployee() {
         GameObject empGO = Instantiate(employeePrefab, spawnPoint.position, Quaternion.identity);
         Employee emp = empGO.GetComponent<Employee>();
@@ -80,8 +79,8 @@ public class EmployeeManager : MonoBehaviour {
         }
         return emp;
     }
+*/
 
-    // Spawn an employee using candidate data from the UI.
     public Employee SpawnCandidateEmployee(CandidateEmployeeData candidateData) {
         GameObject empGO = Instantiate(employeePrefab, spawnPoint.position, Quaternion.identity);
         Employee emp = empGO.GetComponent<Employee>();

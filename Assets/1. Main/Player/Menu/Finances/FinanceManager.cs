@@ -43,6 +43,8 @@ public class FinanceManager {
         Debug.LogError("FinanceManager: Insufficient business funds.");
         return false;
     }
+
+
     #endregion
 
     #region Personal Transactions

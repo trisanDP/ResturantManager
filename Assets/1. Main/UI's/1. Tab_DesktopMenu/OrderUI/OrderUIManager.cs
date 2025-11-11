@@ -39,11 +39,10 @@ public class OrdersUIManager : MonoBehaviour {
 
     #region UI Update Methods
     public void UpdateOrdersUI() {
-        Debug.Log("Hello");
         ClearOrderList(pendingOrderListParent);
         ClearOrderList(completedOrderListParent);
 
-        // Fetch orders from OrderManager
+
         pendingOrders = RestaurantManager.Instance.OrderManager.GetPendingOrders();
 
         completedOrders = RestaurantManager.Instance.OrderManager.GetCompletedOrders();

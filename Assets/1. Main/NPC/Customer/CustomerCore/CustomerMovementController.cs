@@ -29,7 +29,7 @@ namespace RestaurantManagement {
             if(agent == null) return;
             if(!agent.enabled) agent.enabled = true;
 
-            agent.updateRotation = true; // Enable automatic rotation
+            agent.updateRotation = true; 
             agent.isStopped = false;
             agent.SetDestination(destination);
         }

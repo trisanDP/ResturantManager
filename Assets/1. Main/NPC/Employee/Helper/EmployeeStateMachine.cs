@@ -10,7 +10,6 @@ public class EmployeeStateManager {
     private Vector3 targetDestination;
     private bool destinationSet = false;
 
-    // Initialization method to grab references.
     public void Initialize(Employee employee, NavMeshAgent agent, Animator animator) {
         this.employee = employee;
         this.agent = agent;
@@ -64,7 +63,6 @@ public class EmployeeStateManager {
         }
     }
 
-    // Change state and trigger corresponding animation.
     public void ChangeState(EmployeeState newState) {
         employee.currentState = newState;
         switch(newState) {
@@ -83,14 +81,14 @@ public class EmployeeStateManager {
         }
     }
 
-    // Assign a destination for moving.
+
     public void SetDestination(Vector3 destination) {
         targetDestination = destination;
         destinationSet = true;
         ChangeState(EmployeeState.Moving);
     }
 
-    // Assign a destination for carrying objects.
+
     public void StartCarrying(Vector3 destination) {
         targetDestination = destination;
         destinationSet = true;

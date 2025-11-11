@@ -1,13 +1,16 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using RestaurantManagement;
 
 public class CartUIManager : MonoBehaviour {
-    [Header("Cart UI Elements")]
-    public Transform cartContent;         // Parent container for cart items
-    public GameObject cartItemPrefab;       // Prefab for a cart item (see next section)
-    public Button buyNowButton;             // Button to trigger purchase
-    public TextMeshProUGUI totalCostText;   // Displays the total cost
+    [Header("Cart UI Elements")]         
+    public Transform cartContent;        
+    public GameObject cartItemPrefab;     
+    public Button buyNowButton;          
+    public TextMeshProUGUI totalCostText;
+
+    public TextMeshProUGUI txt_Balance;
 
     private ShopLogicManager shopLogicManager;
     private void Awake() {
@@ -28,7 +31,6 @@ public class CartUIManager : MonoBehaviour {
         shopLogicManager.OnCartUpdated -= RefreshCartUI;
     }
 
-    // Clears and repopulates the cart UI based on current items.
     private void RefreshCartUI() {
         // Clear previous cart UI entries.
         foreach(Transform child in cartContent) {
@@ -43,6 +45,7 @@ public class CartUIManager : MonoBehaviour {
             cartItemUI.Initialize(item, quantity, shopLogicManager);
         }
         totalCostText.text = $"Total: ${shopLogicManager.GetTotalCartCost()}";
+        txt_Balance.text = RestaurantManager.Instance.FinanceManager.BusinessBalance.ToString();
     }
 
     private void OnBuyNowClicked() {

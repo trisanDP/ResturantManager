@@ -262,7 +262,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2faa610713d3b3c439473daa55e8c60a, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.4
+      value: 11.389
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2faa610713d3b3c439473daa55e8c60a, type: 3}
       propertyPath: m_LocalPosition.y
@@ -270,7 +270,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2faa610713d3b3c439473daa55e8c60a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -12.06
+      value: 4.61
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2faa610713d3b3c439473daa55e8c60a, type: 3}
       propertyPath: m_LocalRotation.w
@@ -345,10 +345,10 @@ Rigidbody:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6174662439821691655}
-  serializedVersion: 4
+  serializedVersion: 5
   m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -378,7 +378,7 @@ NavMeshAgent:
   m_Speed: 0.9
   m_Acceleration: 3
   avoidancePriority: 50
-  m_AngularSpeed: 12376
+  m_AngularSpeed: 1791
   m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1

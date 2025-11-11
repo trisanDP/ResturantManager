@@ -18,6 +18,7 @@ public enum EmployeeRole {
 
 
 public class Employee : MonoBehaviour {
+
     #region Fields & Properties
     [Header("Employee Data")]
     public string employeeName = "Unnamed";

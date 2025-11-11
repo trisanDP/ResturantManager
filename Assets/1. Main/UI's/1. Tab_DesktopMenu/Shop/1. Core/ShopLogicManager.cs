@@ -22,20 +22,16 @@ public class ShopLogicManager : MonoBehaviour {
     #endregion
 
     private void Awake() {
-        // Load the database (assuming it's in Resources folder)
         itemDatabase = Resources.Load<ItemDatabase>("ItemDatabase");
         if(itemDatabase == null) {
             Debug.LogError("ItemDatabase not found in Resources folder.");
         }
     }
     private void Start() {
-        // Get the finance manager from your central RestaurantManager singleton
         financeManager = RestaurantManager.Instance.FinanceManager;
     }
 
     #region Cart Management
-
-    // Adds an item to the cart (or increments quantity if it exists)
     public void AddToCart(FoodItemData item, int quantity = 1) {
         if(cartItems.ContainsKey(item)) {
             cartItems[item] += quantity;
@@ -45,8 +41,6 @@ public class ShopLogicManager : MonoBehaviour {
         Debug.Log($"Added {item.FoodName} x{quantity} to cart.");
         OnCartUpdated?.Invoke();
     }
-
-    // Updates the quantity of an item in the cart (delta can be positive or negative)
     public void UpdateCartItemQuantity(FoodItemData item, int delta) {
         if(cartItems.ContainsKey(item)) {
             cartItems[item] += delta;
@@ -57,7 +51,6 @@ public class ShopLogicManager : MonoBehaviour {
         }
     }
 
-    // Remove an item entirely from the cart.
     public void RemoveFromCart(FoodItemData item) {
         if(cartItems.ContainsKey(item)) {
             cartItems.Remove(item);
@@ -72,7 +65,6 @@ public class ShopLogicManager : MonoBehaviour {
         OnCartUpdated?.Invoke();
     }
 
-    // Calculates the total cost of the cart.
     public decimal GetTotalCartCost() {
         decimal totalCost = 0;
         foreach(var cartItem in cartItems) {
